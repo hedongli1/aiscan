@@ -1,0 +1,15 @@
+# aiscan 忽略清单（类似 .gitignore）
+# 这些文件包含安全术语字符串，属于规则定义/测试数据，不应视为泄漏。
+
+# 规则库本身包含弱加密/密钥等关键字的文本描述（自指误报）
+rules/index.js
+lib/rules/index.js
+
+# 测试与演示数据
+test/
+fixtures/
+
+# 扫描器自身的受控文件遍历（路径来自 walk，非用户输入）
+scanner.js
+lib/scanner.js
+

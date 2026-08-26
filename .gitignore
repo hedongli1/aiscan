@@ -1,0 +1,6 @@
+node_modules/
+*.log
+security-report.html
+aiscan-results.json
+aiscan-results.sarif
+.DS_Store

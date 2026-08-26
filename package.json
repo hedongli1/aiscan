@@ -1,0 +1,28 @@
+{
+  "name": "aiscan",
+  "version": "0.1.0",
+  "description": "AI-assisted code security scanner — zero-dependency static analysis + entropy-based secret detection + SARIF output",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "aiscan": "bin/aiscan.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "node --test",
+    "scan": "node bin/aiscan.js",
+    "scan:self": "node bin/aiscan.js lib bin --json",
+    "demo": "node bin/aiscan.js fixtures/demo.js --report html"
+  },
+  "keywords": [
+    "security",
+    "static-analysis",
+    "secret-detection",
+    "code-audit",
+    "ai",
+    "sarif",
+    "devsecops"
+  ]
+}

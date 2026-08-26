@@ -1,0 +1,83 @@
+name: 'aiscan - AI Code Security Scan'
+description: 'Zero-dependency AI-assisted static code security scanner. Detects secrets, injections, XSS, weak crypto and supply-chain risks. Produces SARIF reports for GitHub Security.'
+author: 'hedongli1'
+
+branding:
+  icon: 'shield'
+  color: 'red'
+
+inputs:
+  path:
+    description: 'File or directory to scan. Default: current repo.'
+    required: false
+    default: '.'
+  severity:
+    description: 'Minimum severity to report: critical | high | medium | low. Default: low (report all).'
+    required: false
+    default: 'low'
+  sarif:
+    description: 'Upload SARIF results to GitHub Security tab. true/false. Default: true.'
+    required: false
+    default: 'true'
+  fail-on:
+    description: 'Fail the build if any finding at or above this severity: critical | high | medium | low | none.'
+    required: false
+    default: 'high'
+
+outputs:
+  findings:
+    description: 'JSON string of all findings (for downstream steps).'
+  security-score:
+    description: 'Security score 0-100.'
+  grade:
+    description: 'Security grade A-F.'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Run aiscan'
+      id: aiscan
+      shell: bash
+      run: |
+        # 下载 aiscan（零依赖，直接克隆仓库的 bin/lib）
+        TMPDIR_AISCAN="${RUNNER_TEMP}/aiscan"
+        rm -rf "$TMPDIR_AISCAN"
+        git clone --depth 1 https://github.com/hedongli1/aiscan.git "$TMPDIR_AISCAN" 2>/dev/null || { echo "::error::无法克隆 aiscan"; exit 1; }
+        # 扫描目标仓库
+        cd "$GITHUB_WORKSPACE/${{ inputs.path }}"
+        OUTPUT=$("$TMPDIR_AISCAN/bin/aiscan.js" . --json --severity=${{ inputs.severity }})
+        echo "$OUTPUT" > aiscan-results.json
+        echo "::set-output name=results::$OUTPUT"
+        # 汇总到 output
+        SCORE=$(echo "$OUTPUT" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d);console.log(j.summary.securityScore)})")
+        GRADE=$(echo "$OUTPUT" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d);console.log(j.summary.grade)})")
+        echo "::set-output name=security-score::$SCORE"
+        echo "::set-output name=grade::$GRADE"
+        echo "::notice::aiscan scan complete: ${GRADE} (score ${SCORE})"
+        # SARIF 输出
+        if [ "${{ inputs.sarif }}" = "true" ]; then
+          "$TMPDIR_AISCAN/bin/aiscan.js" . --sarif --severity=${{ inputs.severity }} > aiscan-results.sarif
+          echo "::set-output name=sarif_path::$GITHUB_WORKSPACE/${{ inputs.path }}/aiscan-results.sarif"
+        fi
+        # 失败门禁
+        if [ "${{ inputs.fail-on }}" != "none" ]; then
+          FAIL_LEVEL=${{ inputs.fail-on }}
+          FAIL_COUNT=$(echo "$OUTPUT" | node -e "
+            let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{
+              const j=JSON.parse(d);const order={low:0,medium:1,high:2,critical:3};
+              const min=order['$FAIL_LEVEL']||2;
+              const n=j.findings.filter(f=>order[f.severity]>=min).length;
+              console.log(n)
+            })")
+          if [ "$FAIL_COUNT" != "0" ]; then
+            echo "::error::aiscan found $FAIL_COUNT finding(s) at or above $FAIL_LEVEL severity"
+            exit 1
+          fi
+        fi
+
+    - name: 'Upload SARIF to GitHub Security'
+      if: inputs.sarif == 'true'
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ steps.aiscan.outputs.sarif_path }}
+        category: aiscan
