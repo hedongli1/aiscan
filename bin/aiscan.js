@@ -14,6 +14,7 @@ function usage() {
   --sarif         输出 SARIF 2.1.0（GitHub Security 原生支持）
   --report html   生成 HTML 报告（security-report.html）
   --severity=X    只显示 ≥ X 的发现（critical|high|medium|low）
+  --ignore-file=P  指定 .aiscanignore 文件路径（默认从当前目录查找）
   --quiet         仅输出摘要
   --rules         列出全部检测规则
   -h, --help      帮助
@@ -41,12 +42,13 @@ async function main() {
   const isHtml = args.includes('--report') && args.includes('html');
   const isQuiet = args.includes('--quiet');
   const severityMin = args.find((a) => a.startsWith('--severity='))?.split('=')[1] || 'low';
+  const ignoreFile = args.find((a) => a.startsWith('--ignore-file='))?.split('=').slice(1).join('=') || null;
   const order = { low: 0, medium: 1, high: 2, critical: 3 };
   const minLevel = order[severityMin] ?? 0;
 
   const all = [];
   for (const t of root) {
-    const res = await scanDirectory(t);
+    const res = await scanDirectory(t, { ignoreFile });
     all.push(...res.findings);
   }
   const filtered = all.filter((f) => order[f.severity] >= minLevel);

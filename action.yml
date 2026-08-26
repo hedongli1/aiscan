@@ -31,6 +31,8 @@ outputs:
     description: 'Security score 0-100.'
   grade:
     description: 'Security grade A-F.'
+  sarif-path:
+    description: 'Path to generated SARIF file.'
 
 runs:
   using: 'composite'
@@ -43,25 +45,40 @@ runs:
         TMPDIR_AISCAN="${RUNNER_TEMP}/aiscan"
         rm -rf "$TMPDIR_AISCAN"
         git clone --depth 1 https://github.com/hedongli1/aiscan.git "$TMPDIR_AISCAN" 2>/dev/null || { echo "::error::无法克隆 aiscan"; exit 1; }
-        # 扫描目标仓库
-        cd "$GITHUB_WORKSPACE/${{ inputs.path }}"
-        OUTPUT=$("$TMPDIR_AISCAN/bin/aiscan.js" . --json --severity=${{ inputs.severity }})
+        # 扫描目标仓库（从目标目录运行，.aiscanignore 取仓库根目录的）
+        SCAN_DIR="$GITHUB_WORKSPACE/${{ inputs.path }}"
+        IGNORE_FILE=$( [ -f "$GITHUB_WORKSPACE/.aiscanignore" ] && echo "$GITHUB_WORKSPACE/.aiscanignore" || echo "$SCAN_DIR/.aiscanignore" )
+        [ -f "$IGNORE_FILE" ] || IGNORE_FILE=""
+        cd "$SCAN_DIR"
+        if [ -n "$IGNORE_FILE" ]; then
+          OUTPUT=$("$TMPDIR_AISCAN/bin/aiscan.js" . --json --severity=${{ inputs.severity }} --ignore-file="$IGNORE_FILE")
+        else
+          OUTPUT=$("$TMPDIR_AISCAN/bin/aiscan.js" . --json --severity=${{ inputs.severity }})
+        fi
         echo "$OUTPUT" > aiscan-results.json
-        echo "::set-output name=results::$OUTPUT"
-        # 汇总到 output
-        SCORE=$(echo "$OUTPUT" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d);console.log(j.summary.securityScore)})")
-        GRADE=$(echo "$OUTPUT" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d);console.log(j.summary.grade)})")
-        echo "::set-output name=security-score::$SCORE"
-        echo "::set-output name=grade::$GRADE"
+        CURRENT_EPOCH=$(date +%s)
+        {
+          echo "results<<AISCAN_EOF"
+          printf '%s' "$OUTPUT" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{console.log(JSON.stringify(JSON.parse(d).findings))})"
+          echo "AISCAN_EOF"
+          echo "security-score=$(echo "$OUTPUT" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{console.log(JSON.parse(d).summary.securityScore)})")"
+          echo "grade=$(echo "$OUTPUT" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{console.log(JSON.parse(d).summary.grade)})")"
+        } >> "$GITHUB_ENV"
+        SCORE=$(echo "$OUTPUT" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{console.log(JSON.parse(d).summary.securityScore)})")
+        GRADE=$(echo "$OUTPUT" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{console.log(JSON.parse(d).summary.grade)})")
         echo "::notice::aiscan scan complete: ${GRADE} (score ${SCORE})"
         # SARIF 输出
         if [ "${{ inputs.sarif }}" = "true" ]; then
-          "$TMPDIR_AISCAN/bin/aiscan.js" . --sarif --severity=${{ inputs.severity }} > aiscan-results.sarif
-          echo "::set-output name=sarif_path::$GITHUB_WORKSPACE/${{ inputs.path }}/aiscan-results.sarif"
+          if [ -n "$IGNORE_FILE" ]; then
+            "$TMPDIR_AISCAN/bin/aiscan.js" . --sarif --severity=${{ inputs.severity }} --ignore-file="$IGNORE_FILE" > aiscan-results.sarif
+          else
+            "$TMPDIR_AISCAN/bin/aiscan.js" . --sarif --severity=${{ inputs.severity }} > aiscan-results.sarif
+          fi
+          echo "sarif-path=$GITHUB_WORKSPACE/${{ inputs.path }}/aiscan-results.sarif" >> "$GITHUB_ENV"
         fi
-        # 失败门禁
-        if [ "${{ inputs.fail-on }}" != "none" ]; then
-          FAIL_LEVEL=${{ inputs.fail-on }}
+        # 失败门禁（fail-on=none 时永不失败）
+        FAIL_LEVEL=${{ inputs.fail-on }}
+        if [ "$FAIL_LEVEL" != "none" ]; then
           FAIL_COUNT=$(echo "$OUTPUT" | node -e "
             let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{
               const j=JSON.parse(d);const order={low:0,medium:1,high:2,critical:3};
@@ -79,5 +96,5 @@ runs:
       if: inputs.sarif == 'true'
       uses: github/codeql-action/upload-sarif@v3
       with:
-        sarif_file: ${{ steps.aiscan.outputs.sarif_path }}
+        sarif_file: ${{ env.sarif-path }}
         category: aiscan
