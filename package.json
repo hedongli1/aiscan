@@ -1,9 +1,12 @@
 {
-  "name": "aiscan",
+  "name": "@hedongli1/aiscan",
   "version": "0.1.0",
   "description": "AI-assisted code security scanner — zero-dependency static analysis + entropy-based secret detection + SARIF output",
   "license": "MIT",
   "type": "module",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "bin": {
     "aiscan": "bin/aiscan.js"
   },
