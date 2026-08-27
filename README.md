@@ -4,7 +4,7 @@
 
 **aiscan** 是一个 AI 辅助的静态代码安全审计工具：用**模式匹配 + 香农熵启发式**扫描代码库，检测**硬编码密钥、注入漏洞、XSS、弱加密、供应链风险**，并生成 **SARIF 报告**（GitHub Security 原生支持）。
 
-纯 Node 内置模块实现，**零依赖**，任何机器 `npx` 即用。可以用它扫描**别人的仓库** —— 甚至它自己（dogfooding）。
+纯 Node 内置模块实现，**零依赖**，无需任何安装即可克隆运行。已发布 GitHub Packages（`@hedongli1/aiscan`）与 GitHub Action，可通过 `npm install -g @hedongli1/aiscan` 或 one-line Action 使用。可以用它扫描**别人的仓库** —— 甚至它自己（dogfooding）。
 
 ## ✨ 特性
 
@@ -31,24 +31,32 @@
 
 ## 🚀 快速开始
 
+Github 上的首次安装（**GitHub Packages** 发布，需配置一次）：
+
 ```bash
-# 扫描当前目录（跳过 node_modules / .git）
-npx aiscan .
+# ① 配置 GitHub 包仓库（用户名 hedongli1 + 你的 GitHub token）
+npm config set @hedongli1:registry https://npm.pkg.github.com
+echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> ~/.npmrc
 
-# 扫描指定目录
-npx aiscan src lib
+# ② 安装
+npm install -g @hedongli1/aiscan
 
-# 只报告高危以上
-npx aiscan src --severity=high
+# ③ 使用
+aiscan --version
+```
 
-# JSON 输出（适合 CI 解析）
-npx aiscan . --json
+> 💡 源码直接运行（零依赖，无需安装）：`git clone` 后 `node bin/aiscan.js .`
 
-# SARIF 输出（GitHub Security 原生支持）
-npx aiscan . --sarif
+```bash
+# 本地开发用法
+node bin/aiscan.js .            # 扫描当前目录（跳过 node_modules / .git）
 
-# 生成 HTML 报告
-npx aiscan . --report html
+# 用法一览
+node bin/aiscan.js src lib      # 扫描指定目录
+node bin/aiscan.js src --severity=high   # 只报告高危以上
+node bin/aiscan.js . --json     # JSON 输出（适合 CI 解析）
+node bin/aiscan.js . --sarif    # SARIF 输出（GitHub Security 原生支持）
+node bin/aiscan.js . --report html       # 生成 HTML 报告
 ```
 
 ## 🧪 真实扫描输出
