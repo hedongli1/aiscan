@@ -22,8 +22,9 @@ jobs:
 
       - name: 运行 aiscan 巡检
         env:
-          # GITHUB_TOKEN：本仓库写 Issue + 读账号下全部仓库（默认权限足够）
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # PATROL_TOKEN：用户 PAT（repo scope），能列账号全部仓库并跨仓库开 Issue
+          # GITHUB_TOKEN：兜底（仅本仓库权限；列用户仓库会被 403）
+          GITHUB_TOKEN: ${{ secrets.PATROL_TOKEN || secrets.GITHUB_TOKEN }}
         run: node bin/aiscan.js --patrol --patrol-sev=high || PATROL_EXIT=$?
 
       - name: 巡检摘要
