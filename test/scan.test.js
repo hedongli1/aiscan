@@ -151,8 +151,8 @@ describe('gitleaks 移植规则（v0.3.0 二次创作）', () => {
     const { ALL_RULES } = await import('../lib/rules/index.js');
     const npmRule = ALL_RULES.find((r) => r.id === 'GL-npm-access-token');
     if (npmRule) {
-      // npm_ + 32 位序列（占位字符，非真实 token 结构）
-      assert.ok(npmRule.regex.test('npm_' + 'A1B2C3D4'.repeat(4)), 'npm token 应命中');
+      // npm_ + 36 位小写十六进制占位（非真实 token）
+      assert.ok(npmRule.regex.test('npm_' + 'a1b2c3d4'.repeat(4) + 'e5f6'), 'npm token 应命中');
     }
     const slackRule = ALL_RULES.find((r) => r.id === 'GL-slack-webhook-url');
     if (slackRule) {
