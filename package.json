@@ -16,6 +16,13 @@
     "scan:self": "node bin/aiscan.js lib bin --json",
     "demo": "node bin/aiscan.js fixtures/demo.js --report html"
   },
+  "files": [
+    "bin/",
+    "lib/",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
   "keywords": [
     "security",
     "static-analysis",
