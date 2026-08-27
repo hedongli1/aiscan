@@ -105,6 +105,17 @@ jobs:
 
 跑完自动把 **SARIF 结果上传到 GitHub Security 标签页**（Security → Code scanning → aiscan），无需任何额外配置。
 
+## 🏢 真实项目接入（Dogfooding）
+
+aiscan 已在两个真实 GitHub 项目上运行安全审查：
+
+| 项目 | aiscan Action | 审计结果 | 说明 |
+| --- | --- | --- | --- |
+| [ledger-app](https://github.com/hedongli1/ledger-app) | ✅ [aiscan-security](https://github.com/hedongli1/ledger-app/actions) | 发现 SQL 拼接风险信号 → 已复核修复 | 白名单 conds 拼接经复核确认安全，用 `.aiscanignore` 记录结论 |
+| [purple-team-lab](https://github.com/hedongli1/purple-team-lab) | ✅ [aiscan-security](https://github.com/hedongli1/purple-team-lab/actions) | **0 发现，评分 100/A** | 干净基线对照案例 |
+
+两个 Action 均在 GitHub Actions 云端真实运行（含每日定时扫描），结果可随时在对应仓库的 Actions 页面与 Security 标签页复核。
+
 ## 📋 检测规则一览
 
 | 规则 ID | 严重级 | 类别 | 检测内容 |
