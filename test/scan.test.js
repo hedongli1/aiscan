@@ -91,3 +91,40 @@ describe('规则库', () => {
     }
   });
 });
+
+describe('回归测试（v0.2.0 修复的 bug，全部来自真实审查）', () => {
+  test('报告 snippet 不泄漏密钥明文（安全工具自身防二次泄漏）', async () => {
+    const { findings } = await scanDirectory('fixtures/demo.js');
+    const aws = findings.find((f) => f.ruleId === 'SECRET-AWS');
+    assert.ok(aws, 'SECRET-AWS 应命中');
+    assert.ok(!aws.snippet.includes('AKIAIOSFODNN7EXAMPLE123456'), 'snippet 不得包含完整密钥');
+    assert.ok(aws.snippet.includes('…'), 'snippet 应有脱敏标记');
+  });
+
+  test('弱加密规则不误报变量名 / 注释里的裸词', () => {
+    const r = RULES.find((x) => x.id === 'CRYPTO-WEAK-CIPHER');
+    assert.equal(r.regex.test('const des = items.length;'), false, '变量名 des 不应命中');
+    assert.equal(r.regex.test('// see ECB documentation'), false, '注释 ECB 不应命中');
+    assert.equal(r.regex.test("algo = 'DES'"), true, "字符串 'DES' 应命中");
+    assert.equal(r.regex.test("createCipheriv('des-cbc', key)"), true, 'cipheriv 调用应命中');
+  });
+
+  test('MD5/SHA1 规则覆盖函数调用写法', () => {
+    const r = RULES.find((x) => x.id === 'CRYPTO-WEAK-MD5');
+    assert.equal(r.regex.test('md5(data)'), true, 'md5(data) 应命中');
+    assert.equal(r.regex.test('sha1(pwd)'), true, 'sha1(pwd) 应命中');
+    assert.equal(r.regex.test("createHash('md5')"), true, "createHash('md5') 应命中");
+  });
+
+  test('同一行的正则命中后熵启发式不重复报告', async () => {
+    const { findings } = await scanDirectory('fixtures/demo.js');
+    // demo.js 中 AWS key 行：SECRET-AWS（正则）与 SECRET-GENERIC-TOKEN（熵）同在一行
+    const awsLine = findings.find((f) => f.ruleId === 'SECRET-AWS')?.line;
+    const dupOnLine = findings.filter(
+      (f) => f.line === awsLine && f.heuristic && f.file === 'demo.js'
+    );
+    // 熵启发式对已命中的行不再重复报（demo.js 其他行仍可报）
+    assert.ok(!dupOnLine.some((f) => f.line === awsLine && f.confidence >= 65 && f.snippet.includes('AKIA')),
+      '已被正则命中的行不应再报熵告警');
+  });
+});

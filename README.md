@@ -10,7 +10,7 @@
 
 | 能力 | 说明 |
 | --- | --- |
-| 🔍 14 条检测规则 | 覆盖密钥泄漏、SQL/命令注入、XSS、弱加密、路径穿越、供应链 |
+| 🔍 15 条检测规则 | 覆盖密钥泄漏、SQL/命令注入、XSS、弱加密、路径穿越、供应链 |
 | 🧠 熵启发式（AI） | 基于香农熵 + 长度 + 字符混合度，自动识别高熵疑似密钥，附置信度评分 |
 | 📦 零依赖 | 只用 Node 内置 `fs/path/test`，无 npm 安装负担 |
 | 🚀 GitHub Action | 一行 YAML 接入任意仓库，自动上传 SARIF 到 Security 标签页 |
@@ -22,7 +22,7 @@
 | 徽章 | 说明 |
 | --- | --- |
 | ![CI](https://img.shields.io/github/actions/workflow/status/hedongli1/aiscan/ci.yml?label=CI&logo=github) | 测试 + dogfooding 流水线（点击查看运行历史） |
-| ![tests](https://img.shields.io/badge/tests-10%20passed-brightgreen) | `node --test` 单元测试全部通过 |
+| ![tests](https://img.shields.io/badge/tests-14%20passed-brightgreen) | `node --test` 单元测试全部通过 |
 | ![self-scan](https://img.shields.io/badge/self%20scan-100%2FA-brightgreen) | aiscan 扫描自身源码：0 发现，评分 100/A |
 | ![demo](https://img.shields.io/badge/demo%20scan-11%20findings-red) | 漏洞演示文件：检出 11 项（5 critical / 5 high / 1 medium） |
 | ![license](https://img.shields.io/github/license/hedongli1/aiscan) | MIT |
@@ -142,6 +142,7 @@ aiscan 已在两个真实 GitHub 项目上运行安全审查：
 | CRYPTO-WEAK-CIPHER | medium | 加密 | DES/3DES/RC4 |
 | TLS-INSECURE | high | 加密 | rejectUnauthorized=false |
 | LOG-SENSITIVE | medium | 日志 | 日志打印敏感信息 |
+| DEPS-PIN-ANY | low | 供应链 | 依赖版本未锁死（^ 前缀） |
 
 ## 🔬 熵启发式（AI）原理
 

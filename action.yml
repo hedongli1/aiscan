@@ -42,9 +42,11 @@ runs:
       shell: bash
       run: |
         # 下载 aiscan（零依赖，直接克隆仓库的 bin/lib）
+        # 按 tag 克隆保证 @v1 引用的行为稳定（克隆 main 会导致版本漂移）
         TMPDIR_AISCAN="${RUNNER_TEMP}/aiscan"
         rm -rf "$TMPDIR_AISCAN"
-        git clone --depth 1 https://github.com/hedongli1/aiscan.git "$TMPDIR_AISCAN" 2>/dev/null || { echo "::error::无法克隆 aiscan"; exit 1; }
+        AISCAN_REF="${AISCAN_REF:-v1}"
+        git clone --depth 1 --branch "$AISCAN_REF" https://github.com/hedongli1/aiscan.git "$TMPDIR_AISCAN" 2>/dev/null || { echo "::error::无法克隆 aiscan@$AISCAN_REF"; exit 1; }
         # 扫描目标仓库（从目标目录运行，.aiscanignore 取仓库根目录的）
         SCAN_DIR="$GITHUB_WORKSPACE/${{ inputs.path }}"
         IGNORE_FILE=$( [ -f "$GITHUB_WORKSPACE/.aiscanignore" ] && echo "$GITHUB_WORKSPACE/.aiscanignore" || echo "$SCAN_DIR/.aiscanignore" )

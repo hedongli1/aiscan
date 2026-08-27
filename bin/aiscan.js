@@ -3,21 +3,27 @@
 import { scanDirectory, summarize } from '../lib/scanner.js';
 import { RULES } from '../lib/rules/index.js';
 
+const VERSION = '0.2.0';
+
 function usage() {
-  console.log(`aiscan — AI 辅助代码安全审计（零依赖）
+  console.log(`aiscan — AI 辅助代码安全审计（零依赖）v${VERSION}
 
 用法:
   aiscan [路径...] [--json] [--sarif] [--report html] [--severity=high] [--quiet]
 
 选项:
+  --version       输出版本号
   --json          输出 JSON 结果
   --sarif         输出 SARIF 2.1.0（GitHub Security 原生支持）
   --report html   生成 HTML 报告（security-report.html）
   --severity=X    只显示 ≥ X 的发现（critical|high|medium|low）
+  --fail-on=X     发现 ≥ X 级别问题时以退出码 1 结束（供 CI 门禁）
   --ignore-file=P  指定 .aiscanignore 文件路径（默认从当前目录查找）
   --quiet         仅输出摘要
   --rules         列出全部检测规则
   -h, --help      帮助
+
+退出码: 0 = 通过（或无门禁）；1 = 存在 ≥ fail-on 级别的发现；2 = 运行出错
 `);
 }
 
@@ -25,6 +31,10 @@ async function main() {
   const args = process.argv.slice(2);
   if (args.includes('-h') || args.includes('--help')) {
     usage();
+    return;
+  }
+  if (args.includes('--version') || args.includes('-v')) {
+    console.log(VERSION);
     return;
   }
   if (args.includes('--rules')) {
@@ -42,6 +52,7 @@ async function main() {
   const isHtml = args.includes('--report') && args.includes('html');
   const isQuiet = args.includes('--quiet');
   const severityMin = args.find((a) => a.startsWith('--severity='))?.split('=')[1] || 'low';
+  const failOn = args.find((a) => a.startsWith('--fail-on='))?.split('=')[1] || null;
   const ignoreFile = args.find((a) => a.startsWith('--ignore-file='))?.split('=').slice(1).join('=') || null;
   const order = { low: 0, medium: 1, high: 2, critical: 3 };
   const minLevel = order[severityMin] ?? 0;
@@ -54,13 +65,20 @@ async function main() {
   const filtered = all.filter((f) => order[f.severity] >= minLevel);
   const summary = summarize(filtered);
 
+  // CI 门禁：fail-on 级别以上存在发现 → 退出码 1
+  let failExit = 0;
+  if (failOn && order[failOn] !== undefined) {
+    const threshold = order[failOn];
+    failExit = filtered.some((f) => order[f.severity] >= threshold) ? 1 : 0;
+  }
+
   if (isSarif) {
     console.log(buildSarif(filtered, root));
-    return;
+    process.exit(failExit);
   }
   if (isJson) {
-    console.log(JSON.stringify({ version: '0.1.0', summary, findings: filtered }, null, 2));
-    return;
+    console.log(JSON.stringify({ version: VERSION, summary, findings: filtered }, null, 2));
+    process.exit(failExit);
   }
   if (isHtml) {
     const html = buildHtml(filtered, summary);
@@ -68,17 +86,17 @@ async function main() {
       await fs.writeFile('security-report.html', html, 'utf8');
     });
     console.log(`已生成 security-report.html（${filtered.length} 个发现，安全评分 ${summary.securityScore} / 等级 ${summary.grade}）`);
-    return;
+    process.exit(failExit);
   }
   if (isQuiet) {
     console.log(
       `aiscan: ${summary.total} 个发现 | critical=${summary.counts.critical} high=${summary.counts.high} medium=${summary.counts.medium} | 安全评分 ${summary.securityScore} (${summary.grade})`
     );
-    return;
+    process.exit(failExit);
   }
 
   // 默认人类可读输出
-  console.log(`\n🔍 aiscan — AI 辅助代码安全审计\n`);
+  console.log(`\n🔍 aiscan — AI 辅助代码安全审计 v${VERSION}\n`);
   for (const f of filtered) {
     const icon = { critical: '🔴', high: '🟠', medium: '🟡', low: '⚪' }[f.severity] || '⚪';
     console.log(`${icon} [${f.severity.toUpperCase()}] ${f.title}`);
@@ -92,6 +110,7 @@ async function main() {
     `📊 汇总：${summary.total} 个发现 | 🔴critical=${summary.counts.critical} 🟠high=${summary.counts.high} 🟡medium=${summary.counts.medium} ⚪low=${summary.counts.low}`
   );
   console.log(`🏆 安全评分：${summary.securityScore}/100（等级 ${summary.grade}）\n`);
+  process.exit(failExit);
 }
 
 function buildSarif(findings, roots) {
@@ -181,5 +200,5 @@ function escapeHtml(s) {
 
 main().catch((err) => {
   console.error('aiscan 运行出错:', err.message);
-  process.exit(1);
+  process.exit(2); // 2 = 工具自身错误（区别于"发现问题"的 1）
 });
