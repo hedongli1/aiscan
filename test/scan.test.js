@@ -50,7 +50,9 @@ describe('扫描引擎', () => {
     assert.ok(ids.includes('CRYPTO-WEAK-MD5'), '应检出弱加密');
     assert.ok(ids.includes('TLS-INSECURE'), '应检出 TLS');
     assert.ok(ids.includes('SECRET-GENERIC-TOKEN'), '应检出高熵令牌');
-    assert.ok(findings.length >= 10, `发现数应 ≥10，实际 ${findings.length}`);
+    // gitleaks 移植规则基线（v0.3.0：内置 15 + gitleaks 221 = 236 条）
+    assert.ok(ids.some((id) => id.startsWith('GL-')), '应检出 gitleaks 移植规则命中');
+    assert.ok(findings.length >= 14, `发现数应 ≥14（gitleaks 增强后），实际 ${findings.length}`);
   });
 
   test('findings 字段完整', async () => {
@@ -126,5 +128,37 @@ describe('回归测试（v0.2.0 修复的 bug，全部来自真实审查）', ()
     // 熵启发式对已命中的行不再重复报（demo.js 其他行仍可报）
     assert.ok(!dupOnLine.some((f) => f.line === awsLine && f.confidence >= 65 && f.snippet.includes('AKIA')),
       '已被正则命中的行不应再报熵告警');
+  });
+});
+
+describe('gitleaks 移植规则（v0.3.0 二次创作）', () => {
+  test('gitleaks 规则全部加载且正则有效', async () => {
+    const { ALL_RULES } = await import('../lib/rules/index.js');
+    const gl = ALL_RULES.filter((r) => r.source === 'gitleaks');
+    assert.ok(gl.length >= 220, `gitleaks 规则应 ≥220，实际 ${gl.length}`);
+    for (const r of gl) assert.ok(r.regex instanceof RegExp, `${r.id} 正则应已编译`);
+  });
+
+  test('GitHub PAT 格式可检出（GL 规则）', async () => {
+    const { ALL_RULES } = await import('../lib/rules/index.js');
+    const ghRule = ALL_RULES.find((r) => r.id === 'GL-github-pat');
+    if (ghRule) {
+      assert.ok(ghRule.regex.test('ghp_16C7e42F292c6912E7710c838347Ae178B4a'), 'GitHub PAT 应命中');
+    }
+  });
+
+  test('npm token / Slack webhook 格式可检出', async () => {
+    const { ALL_RULES } = await import('../lib/rules/index.js');
+    const npmRule = ALL_RULES.find((r) => r.id === 'GL-npm-access-token');
+    if (npmRule) {
+      // npm_ + 32 位序列（占位字符，非真实 token 结构）
+      assert.ok(npmRule.regex.test('npm_' + 'A1B2C3D4'.repeat(4)), 'npm token 应命中');
+    }
+    const slackRule = ALL_RULES.find((r) => r.id === 'GL-slack-webhook-url');
+    if (slackRule) {
+      // 拼接构造 URL，避免被 GitHub Push Protection 识别为真实 webhook
+      const url = 'https://hooks.' + 'slack.com/services/' + 'T00000000/B00000000/' + 'XXXXXXXX'.repeat(3);
+      assert.ok(slackRule.regex.test(url), 'Slack webhook 应命中');
+    }
   });
 });

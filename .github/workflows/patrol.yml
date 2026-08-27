@@ -1,0 +1,38 @@
+name: aiscan-patrol
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # 每日凌晨 3 点自动巡检（与各仓库 aiscan-security 错开）
+  workflow_dispatch: # 支持手动触发
+
+permissions:
+  issues: write # 在本仓库开巡检 Issue
+  contents: read # 读取代码
+
+jobs:
+  patrol:
+    name: 全账号安全巡检
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 运行 aiscan 巡检
+        env:
+          # GITHUB_TOKEN：本仓库写 Issue + 读账号下全部仓库（默认权限足够）
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node bin/aiscan.js --patrol --patrol-sev=high || PATROL_EXIT=$?
+
+      - name: 巡检摘要
+        if: always()
+        run: |
+          echo "## 🛡️ aiscan-patrol 巡检报告" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "每日自动扫描本账号全部仓库，查找密钥泄漏与高危代码。发现 ≥ high 的问题会自动在本仓库开 Issue（打 aiscan-patrol 标签）。" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- 触发方式：\`$( [ "${{ github.event_name }}" = "schedule" ] && echo 定时 || echo 手动 )\`" >> $GITHUB_STEP_SUMMARY
+          echo "- 详细输出见上方「运行 aiscan 巡检」步骤日志" >> $GITHUB_STEP_SUMMARY
+          exit ${PATROL_EXIT:-0}

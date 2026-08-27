@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // aiscan CLI · 入口
 import { scanDirectory, summarize } from '../lib/scanner.js';
+import { patrol } from '../lib/patrol.js';
 import { RULES } from '../lib/rules/index.js';
 
 const VERSION = '0.2.0';
@@ -20,6 +21,9 @@ function usage() {
   --fail-on=X     发现 ≥ X 级别问题时以退出码 1 结束（供 CI 门禁）
   --ignore-file=P  指定 .aiscanignore 文件路径（默认从当前目录查找）
   --quiet         仅输出摘要
+  --patrol        自动巡检模式：扫描 GitHub 账号下全部仓库，发现 ≥ 指定级别问题自动开 Issue
+  --patrol-sev=X  巡检报 Issue 的最低级别（默认 high；patrol 模式下生效）
+  --dry-run       patrol 只报告不实际开 Issue
   --rules         列出全部检测规则
   -h, --help      帮助
 
@@ -47,6 +51,25 @@ async function main() {
 
   const targets = args.filter((a) => !a.startsWith('--'));
   const root = targets.length ? targets : ['.'];
+
+  // ── 巡检模式（patrol）：扫全账号仓库 + 自动开 Issue ──
+  if (args.includes('--patrol')) {
+    const token = process.env.GITHUB_TOKEN || process.env.PATROL_TOKEN;
+    if (!token) {
+      console.error('patrol 模式需要 GITHUB_TOKEN 环境变量');
+      process.exit(2);
+    }
+    const patrolSev = args.find((a) => a.startsWith('--patrol-sev='))?.split('=')[1] || 'high';
+    const dryRun = args.includes('--dry-run');
+    const report = await patrol({ token, minSeverity: patrolSev, dryRun });
+    console.log(`\n📊 巡检汇总: 扫描 ${report.scanned} 个仓库 | 干净 ${report.cleanRepos} | 告警 ${report.flaggedRepos.length} | 开 Issue ${report.issuesOpened}`);
+    if (report.errors.length) {
+      console.log(`⚠️ 出错仓库: ${report.errors.map((e) => e.repo).join(', ')}`);
+      process.exit(2);
+    }
+    process.exit(report.flaggedRepos.length ? 1 : 0);
+  }
+
   const isJson = args.includes('--json');
   const isSarif = args.includes('--sarif');
   const isHtml = args.includes('--report') && args.includes('html');

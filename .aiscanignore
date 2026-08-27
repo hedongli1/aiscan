@@ -5,6 +5,13 @@
 rules/index.js
 lib/rules/index.js
 
+# gitleaks 移植规则文件：内容即密钥正则模式（自指误报）
+gitleaks.js
+lib/rules/gitleaks.js
+
+# 转换工具读写的规则源文件
+tools/
+
 # 测试与演示数据
 test/
 fixtures/
@@ -13,3 +20,23 @@ fixtures/
 scanner.js
 lib/scanner.js
 
+# CLI 代码里的环境变量名引用（process.env.GITHUB_TOKEN 是读取而非泄漏）
+aiscan.js
+bin/aiscan.js
+
+
+# 生成的安全报告（内容为 demo 漏洞检测结果）
+security-report.html
+
+# 文档中的示例代码片段（讲的就是这些漏洞）
+README.md
+action.yml
+.github/ISSUE_TEMPLATE/new_rule.md
+
+# patrol 代码里的受控克隆与示例 token 引用
+patrol.js
+lib/patrol.js
+
+# 熵模块文档字符串中的示例令牌
+entropy.js
+lib/entropy.js
