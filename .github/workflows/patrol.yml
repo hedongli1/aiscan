@@ -18,22 +18,31 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
 
-      - name: 运行 aiscan 巡检
+      - name: 运行 aiscan 巡检（236 条规则扫全账号仓库）
         env:
-          # PATROL_TOKEN：用户 PAT（repo scope），能列账号全部仓库并跨仓库开 Issue
-          # GITHUB_TOKEN：兜底（仅本仓库权限；列用户仓库会被 403）
+          # PATROL_TOKEN：PAT（repo scope），能列账号全部仓库并跨仓库克隆
+          # GITHUB_TOKEN：兜底（仅本仓库权限；列用户仓库会 403）
           GITHUB_TOKEN: ${{ secrets.PATROL_TOKEN || secrets.GITHUB_TOKEN }}
-        run: node bin/aiscan.js --patrol --patrol-sev=high || PATROL_EXIT=$?
+        run: |
+          set +e
+          node bin/aiscan.js --patrol --patrol-sev=high
+          PATROL_EXIT=$?
+          set -e
+          # 退出码语义：0=干净 1=发现告警（正常，开 Issue 后本 job 仍算成功）2=工具错误
+          if [ "$PATROL_EXIT" = "2" ]; then
+            echo "::error::patrol 工具运行出错（区别于发现告警）"
+            exit 2
+          fi
+          echo "patrol 退出码 $PATROL_EXIT（0=干净 / 1=有告警已开 Issue）"
+          exit 0
 
       - name: 巡检摘要
         if: always()
         run: |
           echo "## 🛡️ aiscan-patrol 巡检报告" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "每日自动扫描本账号全部仓库，查找密钥泄漏与高危代码。发现 ≥ high 的问题会自动在本仓库开 Issue（打 aiscan-patrol 标签）。" >> $GITHUB_STEP_SUMMARY
+          echo "每日自动扫描本账号全部仓库（236 条规则），查找密钥泄漏与高危代码。发现 ≥ high 的问题自动开 Issue（aiscan-patrol 标签）。" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- 触发方式：\`$( [ "${{ github.event_name }}" = "schedule" ] && echo 定时 || echo 手动 )\`" >> $GITHUB_STEP_SUMMARY
           echo "- 详细输出见上方「运行 aiscan 巡检」步骤日志" >> $GITHUB_STEP_SUMMARY
-          exit ${PATROL_EXIT:-0}
