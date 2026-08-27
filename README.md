@@ -10,7 +10,7 @@
 
 | 能力 | 说明 |
 | --- | --- |
-| 🔍 15 条检测规则 | 覆盖密钥泄漏、SQL/命令注入、XSS、弱加密、路径穿越、供应链 |
+| 🔍 236 条检测规则 | 内置 15 条（注入/XSS/弱加密/供应链）+ gitleaks 移植 221 条（AWS/GCP/Azure/Stripe/GitHub/OpenAI 等主流服务密钥） |
 | 🧠 熵启发式（AI） | 基于香农熵 + 长度 + 字符混合度，自动识别高熵疑似密钥，附置信度评分 |
 | 📦 零依赖 | 只用 Node 内置 `fs/path/test`，无 npm 安装负担 |
 | 🚀 GitHub Action | 一行 YAML 接入任意仓库，自动上传 SARIF 到 Security 标签页 |

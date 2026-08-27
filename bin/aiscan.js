@@ -171,7 +171,7 @@ function buildSarif(findings, roots) {
     runs: [
       {
         tool: {
-          driver: { name: 'aiscan', version: '0.1.0', informationUri: 'https://github.com/hedongli1/aiscan', rules: Object.values(rules) },
+          driver: { name: 'aiscan', version: VERSION, informationUri: 'https://github.com/hedongli1/aiscan', rules: Object.values(rules) },
         },
         results,
       },
