@@ -4,7 +4,7 @@ import { scanDirectory, summarize } from '../lib/scanner.js';
 import { patrol } from '../lib/patrol.js';
 import { RULES } from '../lib/rules/index.js';
 
-const VERSION = '0.3.0';
+const VERSION = '0.4.0';
 
 function usage() {
   console.log(`aiscan — AI 辅助代码安全审计（零依赖）v${VERSION}
@@ -22,6 +22,8 @@ function usage() {
   --ignore-file=P  指定 .aiscanignore 文件路径（默认从当前目录查找）
   --quiet         仅输出摘要
   --patrol        自动巡检模式：扫描 GitHub 账号下全部仓库，发现 ≥ 指定级别问题自动开 Issue
+  --patrol-repo=R 扫描指定第三方仓库（owner/repo，可多次传；只读报告，不开 Issue）
+  --patrol-targets=O1,O2  扫描指定用户/组织的全部公开仓库（只读报告，不开 Issue）
   --patrol-sev=X  巡检报 Issue 的最低级别（默认 high；patrol 模式下生效）
   --dry-run       patrol 只报告不实际开 Issue
   --rules         列出全部检测规则
@@ -53,7 +55,10 @@ async function main() {
   const root = targets.length ? targets : ['.'];
 
   // ── 巡检模式（patrol）：扫全账号仓库 + 自动开 Issue ──
-  if (args.includes('--patrol')) {
+  // 第三方模式：--patrol-repo=owner/repo（单仓库）/ --patrol-targets=o1,o2（多用户全部公开仓库）
+  const patrolRepos = args.filter((a) => a.startsWith('--patrol-repo=')).map((a) => a.split('=').slice(1).join('='));
+  const patrolTargets = args.find((a) => a.startsWith('--patrol-targets='))?.split('=')[1]?.split(',').filter(Boolean) || null;
+  if (args.includes("--patrol") || patrolRepos.length || patrolTargets) {
     const token = process.env.GITHUB_TOKEN || process.env.PATROL_TOKEN;
     if (!token) {
       console.error('patrol 模式需要 GITHUB_TOKEN 环境变量');
@@ -61,8 +66,22 @@ async function main() {
     }
     const patrolSev = args.find((a) => a.startsWith('--patrol-sev='))?.split('=')[1] || 'high';
     const dryRun = args.includes('--dry-run');
-    const report = await patrol({ token, minSeverity: patrolSev, dryRun });
-    console.log(`\n📊 巡检汇总: 扫描 ${report.scanned} 个仓库 | 干净 ${report.cleanRepos} | 告警 ${report.flaggedRepos.length} | 开 Issue ${report.issuesOpened}`);
+    const isJsonOut = args.includes('--json');
+    const report = await patrol({
+      token,
+      minSeverity: patrolSev,
+      dryRun,
+      specificRepos: patrolRepos.length ? patrolRepos : null,
+      targetOwners: patrolTargets,
+    });
+    if (isJsonOut) {
+      console.log(JSON.stringify(report, null, 2));
+    } else {
+      console.log(`\n📊 巡检汇总: 扫描 ${report.scanned} 个仓库 | 干净 ${report.cleanRepos} | 告警 ${report.flaggedRepos.length}${report.thirdParty ? '（第三方只读，不开 Issue）' : ` | 开 Issue ${report.issuesOpened}`}`);
+      for (const f of report.flaggedRepos) {
+        console.log(`   🚨 ${f.repo}: ${f.findings} 个 ≥ ${patrolSev}`);
+      }
+    }
     if (report.errors.length) {
       console.log(`⚠️ 出错仓库: ${report.errors.map((e) => e.repo).join(', ')}`);
       process.exit(2);
