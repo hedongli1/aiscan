@@ -126,6 +126,24 @@ function adaptRegex(src) {
     flags += 'i';
     out = out.replace(/\(\?i\)/g, '');
   }
+  // Go 局部大小写控制 → JS 等价（近似）：
+  //   (?i:xxx)  → 内联化为整体 i flag 的分组（简化：保留分组内容）
+  //   (?-i:xxx) → 大小写敏感分组：因整条规则可能已带 i，改写为字符类近似不可行，
+  //               保守做法是把整条规则降为不带 i 的精确匹配（语义偏严不偏松）
+  out = out.replace(/\(\?i:([^()]*(?:\([^()]*\)[^()]*)*)\)/g, '$1');
+  if (/\(\?-i:/.test(out)) {
+    // 去掉 (?-i: 分组标记本身；若整条规则靠 (?i) 起大小写不敏感，此时撤销全局 i
+    out = out.replace(/\(\?-i:([^()]*(?:\([^()]*\)[^()]*)*)\)/g, '$1');
+    flags = flags.replace('i', '');
+  }
+  // POSIX 字符类 → JS 等价
+  out = out
+    .replace(/\[\[:alnum:\]\]/g, '[A-Za-z0-9]')
+    .replace(/\[\[:digit:\]\]/g, '[0-9]')
+    .replace(/\[\[:alpha:\]\]/g, '[A-Za-z]')
+    .replace(/\[\[:upper:\]\]/g, '[A-Z]')
+    .replace(/\[\[:lower:\]\]/g, '[a-z]')
+    .replace(/\[\[:xdigit:\]\]/g, '[0-9A-Fa-f]');
   out = out.replace(/\(\?P<[^>]+>/g, '(?:');
   out = out.replace(/\(\?s\)/g, '');
   return { source: out, flags };
@@ -212,5 +230,5 @@ lines.push('');
 
 const outFile = path.join(__dirname, '..', 'lib', 'rules', 'gitleaks.js');
 writeFileSync(outFile, lines.join('\n'), 'utf8');
-console.log(`✅ 转换完成: ${parsed.length} 条原始规则 → ${converted.length} 条 JS 规则（跳过 ${parsed.length - converted.length} 条无正则/不兼容）`);
-console.log(`输出: lib/rules/gitleaks.js`);
+console.error(`✅ 转换完成: ${parsed.length} 条原始规则 → ${converted.length} 条 JS 规则（跳过 ${parsed.length - converted.length} 条无正则/不兼容）`);
+console.error(`输出: lib/rules/gitleaks.js`);
