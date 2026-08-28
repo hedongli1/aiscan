@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>aiscan 巡检面板</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e6edf3; padding: 20px; }
+  .wrap { max-width: 880px; margin: 0 auto; }
+  h1 { font-size: 24px; margin-bottom: 4px; }
+  .sub { color: #8b949e; font-size: 13px; margin-bottom: 24px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 18px; }
+  .card .num { font-size: 34px; font-weight: 700; }
+  .card .lbl { color: #8b949e; font-size: 12px; margin-top: 4px; }
+  .green { color: #3fb950; } .red { color: #f85149; } .orange { color: #ffa657; } .blue { color: #58a6ff; }
+  .day { background: #161b22; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
+  .day-head { padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+  .day-head:hover { background: #1c2129; }
+  .day-title { font-weight: 600; font-size: 15px; }
+  .day-stats { color: #8b949e; font-size: 13px; }
+  .repos { border-top: 1px solid #21262d; padding: 8px 0; }
+  .repo-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 18px; }
+  .repo-row:hover { background: #1c2129; }
+  .repo-name { font-size: 14px; }
+  .repo-name a { color: #58a6ff; text-decoration: none; }
+  .repo-score { font-size: 13px; color: #8b949e; white-space: nowrap; }
+  .grade { display: inline-block; width: 26px; height: 26px; line-height: 26px; text-align: center; border-radius: 6px; font-weight: 700; font-size: 13px; margin-left: 8px; }
+  .gA { background: #1b4332; color: #3fb950; } .gB { background: #1f3325; color: #7ee787; }
+  .gC { background: #3d2e00; color: #d29922; } .gD { background: #3d2400; color: #ffa657; }
+  .gF { background: #4a1418; color: #f85149; }
+  .findings { margin-left: auto; margin-right: 12px; font-size: 13px; }
+  details summary { cursor: pointer; list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  .detail-table { margin: 4px 18px 14px; border-collapse: collapse; font-size: 12px; }
+  .detail-table td { border-top: 1px solid #21262d; padding: 8px 4px 8px 0; vertical-align: top; }
+  .sev { padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 6px; }
+  .s-critical { background: #4a1418; color: #f85149; } .s-high { background: #3d2400; color: #ffa657; }
+  code { background: #21262d; padding: 1px 5px; border-radius: 4px; font-size: 11px; word-break: break-all; }
+  .footer { color: #8b949e; font-size: 12px; text-align: center; margin-top: 30px; }
+  .footer a { color: #58a6ff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🛡️ aiscan 巡检面板</h1>
+  <div class="sub">每日自动发现并扫描开源仓库 · 只读审计 · 永不扫描账号自有仓库</div>
+  <div class="cards" id="cards">加载中…</div>
+  <div id="days"></div>
+  <div class="footer">由 <a href="https://github.com/hedongli1/aiscan">aiscan</a> 自动巡检生成 · 数据更新于每日 UTC 03:00</div>
+</div>
+<script>
+(async () => {
+  // 最近 30 天的 JSON 逐个尝试加载（Pages 上无目录列表 API）
+  const files = [];
+  const today = new Date();
+  for (let i = 0; i < 30; i++) {
+    const d = new Date(today.getTime() - i * 86400000);
+    const name = d.toISOString().slice(0, 10);
+    files.push(name + '.json');
+  }
+  const results = await Promise.all(files.map(async (f) => {
+    try {
+      const r = await fetch('history/' + f);
+      if (!r.ok) return null;
+      return await r.json();
+    } catch { return null; }
+  }));
+  const days = results.filter(Boolean);
+  if (!days.length) {
+    document.getElementById('cards').textContent = '暂无巡检数据（等待首次运行）';
+    return;
+  }
+  // 汇总卡片
+  let totalScanned = 0, totalFlagged = 0, totalFindings = 0, totalCrit = 0, totalHigh = 0;
+  for (const d of days) {
+    totalScanned += d.report.scanned || 0;
+    totalFlagged += (d.report.flaggedRepos || []).length;
+    for (const f of d.report.flaggedRepos || []) {
+      totalFindings += f.findings || 0;
+      totalCrit += (f.summary?.counts?.critical) || 0;
+      totalHigh += (f.summary?.counts?.high) || 0;
+    }
+  }
+  document.getElementById('cards').innerHTML = `
+    <div class="card"><div class="num blue">${days.length}</div><div class="lbl">巡检天数</div></div>
+    <div class="card"><div class="num">${totalScanned}</div><div class="lbl">累计扫描仓库</div></div>
+    <div class="card"><div class="num orange">${totalFlagged}</div><div class="lbl">告警仓库</div></div>
+    <div class="card"><div class="num red">${totalCrit}</div><div class="lbl">Critical 发现</div></div>
+    <div class="card"><div class="num red">${totalHigh}</div><div class="lbl">High 发现</div></div>`;
+  // 时间线
+  const container = document.getElementById('days');
+  for (const d of days) {
+    const flagged = d.report.flaggedRepos || [];
+    const clean = (d.report.scanned || 0) - flagged.length;
+    const dayEl = document.createElement('div');
+    dayEl.className = 'day';
+    let repoRows = '';
+    // 告警仓库在前
+    for (const f of flagged) {
+      const g = f.summary?.grade || '?';
+      const cnt = f.summary?.counts || {};
+      const details = (f.detail || []).slice(0, 8).map(x =>
+        `<tr><td><span class="sev s-${x.severity}">${x.severity.toUpperCase()}</span>${x.ruleId}</td>
+         <td><code>${x.file}:${x.line}</code></td>
+         <td style="color:#8b949e">${(x.snippet || '').slice(0, 60)}</td></tr>`).join('');
+      const more = (f.detail || []).length > 8 ? `<tr><td colspan="3" style="color:#8b949e">…共 ${f.detail.length} 项</td></tr>` : '';
+      repoRows += `
+        <details class="repo-row" style="display:block">
+          <summary class="repo-row" style="display:flex">
+            <span class="repo-name">🚨 <a href="https://github.com/${f.repo}" target="_blank">${f.repo}</a></span>
+            <span class="findings">${f.findings} 告警</span>
+            <span class="repo-score">评分 ${f.summary?.securityScore ?? '?'}<span class="grade g${g}">${g}</span></span>
+          </summary>
+          <table class="detail-table"><tbody>${details}${more}</tbody></table>
+        </details>`;
+    }
+    dayEl.innerHTML = `
+      <details open>
+        <summary class="day-head">
+          <span class="day-title">📅 ${d.date}</span>
+          <span class="day-stats">扫描 ${d.report.scanned} · 告警 ${flagged.length} · 干净 ${clean}</span>
+        </summary>
+        <div class="repos">${repoRows || '<div class="repo-row"><span class="repo-name green">✅ 全部干净</span></div>'}</div>
+      </details>`;
+    container.appendChild(dayEl);
+  }
+})();
+</script>
+</body>
+</html>

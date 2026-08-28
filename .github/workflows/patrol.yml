@@ -2,16 +2,18 @@ name: aiscan-patrol
 
 on:
   schedule:
-    - cron: "0 3 * * *" # 每日凌晨 3 点巡检 patrol-targets.json 里的第三方仓库（不扫自己账号）
+    - cron: "0 3 * * *" # 每日巡检自动发现的开源仓库（不扫自己账号）
   workflow_dispatch: # 支持手动触发
 
 permissions:
-  issues: write # 巡检 Issue（仅本仓库）
-  contents: read # 读取代码
+  issues: write
+  contents: write # 巡检结果写入 docs/history/（供面板展示）
+  pages: write
+  id-token: write
 
 jobs:
   patrol:
-    name: 第三方仓库安全巡检（只读）
+    name: 开源仓库安全巡检（只读）
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,12 +22,12 @@ jobs:
         with:
           node-version: 24
 
-      - name: 运行 aiscan 巡检（目标见 patrol-targets.json）
+      - name: 运行 aiscan 巡检（自动发现目标）
         env:
           GITHUB_TOKEN: ${{ secrets.PATROL_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           set +e
-          node bin/aiscan.js --patrol-file=patrol-targets.json --patrol-sev=high > /tmp/patrol-output.txt 2>&1
+          node bin/aiscan.js --patrol-file=patrol-targets.json --patrol-sev=high --json > /tmp/patrol-report.json 2> /tmp/patrol-output.txt
           PATROL_EXIT=$?
           set -e
           cat /tmp/patrol-output.txt
@@ -35,17 +37,44 @@ jobs:
           fi
           exit 0
 
-      - name: 巡检摘要（run Summary 页，手机可看）
+      - name: 巡检摘要（run Summary 页）
         if: always()
         run: |
           {
-            echo "## 🛡️ aiscan-patrol 第三方巡检报告"
+            echo "## 🛡️ aiscan-patrol 巡检报告"
             echo ""
             echo "**时间**：$(date -u '+%Y-%m-%d %H:%M UTC')"
             echo ""
             echo '```'
-            grep -E "待巡检|✅|🚨|↳|巡检汇总" /tmp/patrol-output.txt || echo "（无巡检输出）"
+            grep -E "自动发现|限额|待巡检|✅|🚨|↳|巡检汇总" /tmp/patrol-output.txt || echo "（无巡检输出）"
             echo '```'
             echo ""
-            echo "目标清单在 [patrol-targets.json](https://github.com/hedongli1/aiscan/blob/main/patrol-targets.json)（第三方只读，不开 Issue）。"
+            echo "完整结果见 [巡检面板](https://hedongli1.github.io/aiscan/)"
           } >> $GITHUB_STEP_SUMMARY
+
+      - name: 结果写入面板数据（docs/history/）
+        if: success()
+        run: |
+          DATE=$(date -u '+%Y-%m-%d')
+          mkdir -p docs/history
+          # 包一层元信息：日期 + 原始报告
+          node -e "
+            const raw = require('fs').readFileSync('/tmp/patrol-report.json', 'utf8');
+            const m = raw.match(/===AISCAN_JSON_BEGIN===[\s\S]*?===AISCAN_JSON_END===/);
+            if (!m) { console.error('未找到 JSON 哨兵'); process.exit(1); }
+            const report = JSON.parse(m[0].replace(/===AISCAN_JSON_BEGIN===/, '').replace(/===AISCAN_JSON_END===/, '').trim());
+            const out = { date: '${DATE}', generatedAt: new Date().toISOString(), report };
+            require('fs').writeFileSync('docs/history/${DATE}.json', JSON.stringify(out, null, 2));
+            console.log('已写入 docs/history/${DATE}.json');
+          "
+          # 只保留最近 30 天
+          ls docs/history/*.json | sort | head -n -30 | xargs -r rm
+          git config user.name "aiscan-patrol-bot"
+          git config user.email "hedongli1@users.noreply.github.com"
+          git add docs/history/
+          git diff --cached --quiet || (git commit -m "chore(patrol): ${DATE} 巡检结果 [skip ci]" && git push)
+          echo "面板数据已更新"
+
+      - name: 触发 Pages 部署
+        if: success()
+        run: echo "Pages 会随 main 分支 docs/ 更新自动重新部署"

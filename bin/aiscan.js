@@ -78,7 +78,10 @@ async function main() {
       targetsFile: patrolFile,
     });
     if (isJsonOut) {
+      // JSON 用哨兵包裹：进度日志已打到 stdout，消费者按哨兵提取纯 JSON
+      console.log('===AISCAN_JSON_BEGIN===');
       console.log(JSON.stringify(report, null, 2));
+      console.log('===AISCAN_JSON_END===');
     } else {
       console.log(`\n📊 巡检汇总: 扫描 ${report.scanned} 个仓库 | 干净 ${report.cleanRepos} | 告警 ${report.flaggedRepos.length}${report.thirdParty ? '（第三方只读，不开 Issue）' : ` | 开 Issue ${report.issuesOpened}`}`);
       for (const f of report.flaggedRepos) {
