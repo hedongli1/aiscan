@@ -6,7 +6,7 @@ on:
   workflow_dispatch: # 支持手动触发
 
 permissions:
-  issues: write # 在本仓库开巡检 Issue
+  issues: write # 在本仓库开巡检 Issue / 更新巡检台账
   contents: read # 读取代码
 
 jobs:
@@ -27,22 +27,28 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PATROL_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           set +e
-          node bin/aiscan.js --patrol --patrol-sev=high
+          node bin/aiscan.js --patrol --patrol-sev=high > /tmp/patrol-output.txt 2>&1
           PATROL_EXIT=$?
           set -e
+          cat /tmp/patrol-output.txt
           # 退出码语义：0=干净 1=发现告警（正常，开 Issue 后本 job 仍算成功）2=工具错误
           if [ "$PATROL_EXIT" = "2" ]; then
             echo "::error::patrol 工具运行出错（区别于发现告警）"
             exit 2
           fi
-          echo "patrol 退出码 $PATROL_EXIT（0=干净 / 1=有告警已开 Issue）"
           exit 0
 
-      - name: 巡检摘要
+      - name: 巡检摘要（run Summary 页，手机可看）
         if: always()
         run: |
-          echo "## 🛡️ aiscan-patrol 巡检报告" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "每日自动扫描本账号全部仓库（236 条规则），查找密钥泄漏与高危代码。发现 ≥ high 的问题自动开 Issue（aiscan-patrol 标签）。" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- 详细输出见上方「运行 aiscan 巡检」步骤日志" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🛡️ aiscan-patrol 巡检报告"
+            echo ""
+            echo "**时间**：$(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo ""
+            echo '```'
+            grep -E "待巡检|✅|🚨|↳|巡检汇总" /tmp/patrol-output.txt || echo "（无巡检输出）"
+            echo '```'
+            echo ""
+            echo "发现 ≥ high 的问题会自动开 Issue（[aiscan-patrol 标签](https://github.com/hedongli1/aiscan/issues?q=label%3Aaiscan-patrol)）。"
+          } >> $GITHUB_STEP_SUMMARY

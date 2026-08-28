@@ -40,3 +40,7 @@ lib/patrol.js
 # 熵模块文档字符串中的示例令牌
 entropy.js
 lib/entropy.js
+
+# patrol workflow 引用 secrets.PATROL_TOKEN/GITHUB_TOKEN 是读取环境变量（非泄漏）
+patrol.yml
+.github/workflows/patrol.yml
