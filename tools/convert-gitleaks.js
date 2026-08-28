@@ -202,7 +202,33 @@ function convert(rules) {
 }
 
 // ── 主流程：解析 → 转换 → 生成 JS 模块 ────────────────
-const toml = readFileSync(SRC, 'utf8');
+// 源 toml 不入库（其中的 gitleaks 官方 allowlist 测试样本会触发 GitHub secret scanning 误报），
+// 本地缺失时自动从 gitleaks 官方仓库下载。
+import { writeFileSync as _wf, existsSync } from 'node:fs';
+let toml;
+if (existsSync(SRC)) {
+  toml = readFileSync(SRC, 'utf8');
+} else {
+  console.log('本地无 gitleaks-source.toml，从官方仓库下载…');
+  const res = await fetch(
+    'https://raw.githubusercontent.com/gitleaks/gitleaks/main/config/gitleaks.toml'
+  ).catch(() => null);
+  if (!res || !res.ok) {
+    // raw 不可达时走 GitHub API 通道
+    const api = await fetch('https://api.github.com/repos/gitleaks/gitleaks/contents/config/gitleaks.toml', {
+      headers: { Accept: 'application/vnd.github.raw+json' },
+    }).catch(() => null);
+    if (!api || !api.ok) {
+      console.error('无法获取 gitleaks 规则源（raw 与 API 通道均失败）');
+      process.exit(1);
+    }
+    toml = await api.text();
+  } else {
+    toml = await res.text();
+  }
+  writeFileSync(SRC, toml, 'utf8'); // 缓存到本地（已被 .gitignore 排除，不会入库）
+  console.log(`已下载并缓存（${toml.length} 字节）`);
+}
 const parsed = parseTomlSubset(toml);
 const converted = convert(parsed);
 

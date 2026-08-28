@@ -6,3 +6,4 @@ aiscan-results.sarif
 .DS_Store
 .npmrc
 *.tgz
+tools/gitleaks-source.toml
