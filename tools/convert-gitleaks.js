@@ -171,7 +171,14 @@ function convert(rules) {
     if (seen.has(r.id)) continue; // 重复 id 跳过
     seen.add(r.id);
     // Go RE2 → JS 语法适配 + 合法性校验
-    const { source, flags } = adaptRegex(r.regex);
+    let { source, flags } = adaptRegex(r.regex);
+    // 规则级修正：sourcegraph token 的"裸 40 位 hex"分支会把 CI 里 action 版本
+    // 锁定的 commit SHA（最佳实践写法）误判为密钥 —— 删掉该分支，只认 sgp_ 前缀形态
+    if (r.id === 'sourcegraph-access-token') {
+      source = source.replace(/\|\[a-fA-F0-9\]\{40\}/g, '');
+      // 空分支清理（形如 "(...|" 尾巴）
+      source = source.replace(/\(\|\)/g, '(').replace(/\|\)/g, ')');
+    }
     let re;
     try {
       re = new RegExp(source, flags);
