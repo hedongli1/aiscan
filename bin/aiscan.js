@@ -58,7 +58,7 @@ async function main() {
   // 第三方模式：--patrol-repo=owner/repo（单仓库）/ --patrol-targets=o1,o2（多用户全部公开仓库）
   const patrolRepos = args.filter((a) => a.startsWith('--patrol-repo=')).map((a) => a.split('=').slice(1).join('='));
   const patrolTargets = args.find((a) => a.startsWith('--patrol-targets='))?.split('=')[1]?.split(',').filter(Boolean) || null;
-  if (args.includes("--patrol") || patrolRepos.length || patrolTargets) {
+  if (args.includes("--patrol") || patrolRepos.length || patrolTargets || args.some((a) => a.startsWith("--patrol-file="))) {
     const token = process.env.GITHUB_TOKEN || process.env.PATROL_TOKEN;
     if (!token) {
       console.error('patrol 模式需要 GITHUB_TOKEN 环境变量');
@@ -67,12 +67,15 @@ async function main() {
     const patrolSev = args.find((a) => a.startsWith('--patrol-sev='))?.split('=')[1] || 'high';
     const dryRun = args.includes('--dry-run');
     const isJsonOut = args.includes('--json');
+    // --patrol-file：从 JSON 配置读第三方目标清单（定时巡检默认；不扫自己账号）
+    const patrolFile = args.find((a) => a.startsWith('--patrol-file='))?.split('=').slice(1).join('=') || null;
     const report = await patrol({
       token,
       minSeverity: patrolSev,
       dryRun,
       specificRepos: patrolRepos.length ? patrolRepos : null,
       targetOwners: patrolTargets,
+      targetsFile: patrolFile,
     });
     if (isJsonOut) {
       console.log(JSON.stringify(report, null, 2));

@@ -1,0 +1,10 @@
+{
+  "_comment": "aiscan-patrol 定时巡检目标清单（第三方公开仓库，只读扫描，不开 Issue）。想改扫谁就改这个文件的 repos 数组。",
+  "repos": [
+    "expressjs/express",
+    "lodash/lodash",
+    "request/request",
+    "axios/axios",
+    "chalk/chalk"
+  ]
+}

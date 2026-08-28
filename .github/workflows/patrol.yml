@@ -2,16 +2,16 @@ name: aiscan-patrol
 
 on:
   schedule:
-    - cron: "0 3 * * *" # 每日凌晨 3 点自动巡检（与各仓库 aiscan-security 错开）
+    - cron: "0 3 * * *" # 每日凌晨 3 点巡检 patrol-targets.json 里的第三方仓库（不扫自己账号）
   workflow_dispatch: # 支持手动触发
 
 permissions:
-  issues: write # 在本仓库开巡检 Issue / 更新巡检台账
+  issues: write # 巡检 Issue（仅本仓库）
   contents: read # 读取代码
 
 jobs:
   patrol:
-    name: 全账号安全巡检
+    name: 第三方仓库安全巡检（只读）
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,20 +20,17 @@ jobs:
         with:
           node-version: 24
 
-      - name: 运行 aiscan 巡检（236 条规则扫全账号仓库）
+      - name: 运行 aiscan 巡检（目标见 patrol-targets.json）
         env:
-          # PATROL_TOKEN：PAT（repo scope），能列账号全部仓库并跨仓库克隆
-          # GITHUB_TOKEN：兜底（仅本仓库权限；列用户仓库会 403）
           GITHUB_TOKEN: ${{ secrets.PATROL_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           set +e
-          node bin/aiscan.js --patrol --patrol-sev=high > /tmp/patrol-output.txt 2>&1
+          node bin/aiscan.js --patrol-file=patrol-targets.json --patrol-sev=high > /tmp/patrol-output.txt 2>&1
           PATROL_EXIT=$?
           set -e
           cat /tmp/patrol-output.txt
-          # 退出码语义：0=干净 1=发现告警（正常，开 Issue 后本 job 仍算成功）2=工具错误
           if [ "$PATROL_EXIT" = "2" ]; then
-            echo "::error::patrol 工具运行出错（区别于发现告警）"
+            echo "::error::patrol 工具运行出错"
             exit 2
           fi
           exit 0
@@ -42,7 +39,7 @@ jobs:
         if: always()
         run: |
           {
-            echo "## 🛡️ aiscan-patrol 巡检报告"
+            echo "## 🛡️ aiscan-patrol 第三方巡检报告"
             echo ""
             echo "**时间**：$(date -u '+%Y-%m-%d %H:%M UTC')"
             echo ""
@@ -50,5 +47,5 @@ jobs:
             grep -E "待巡检|✅|🚨|↳|巡检汇总" /tmp/patrol-output.txt || echo "（无巡检输出）"
             echo '```'
             echo ""
-            echo "发现 ≥ high 的问题会自动开 Issue（[aiscan-patrol 标签](https://github.com/hedongli1/aiscan/issues?q=label%3Aaiscan-patrol)）。"
+            echo "目标清单在 [patrol-targets.json](https://github.com/hedongli1/aiscan/blob/main/patrol-targets.json)（第三方只读，不开 Issue）。"
           } >> $GITHUB_STEP_SUMMARY
