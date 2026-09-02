@@ -193,3 +193,39 @@ describe('真实仓库扫描回归（v0.4.1 修复的注入规则误报）', () 
     assert.equal(hdrHits.length, 0, 'header 名列表不应判为 API key');
   });
 });
+
+describe('真实性基准（v0.5.0）', () => {
+  test('XSS 规则覆盖任意动态变量名，不误报纯静态字符串', async () => {
+    const r = RULES.find((x) => x.id === 'XSS-INNERHTML');
+    assert.ok(r, 'XSS-INNERHTML 规则存在');
+    // 真实漏报场景：innerHTML = userHtml（变量名不在旧关键词表）
+    assert.equal(r.regex.test('el.innerHTML = userHtml'), true, '动态变量应命中');
+    assert.equal(r.regex.test('el.innerHTML = `<p>${data}</p>`'), true, '模板插值应命中');
+    assert.equal(r.regex.test("el.innerHTML = '<b>' + name + '</b>'"), true, '字符串拼接应命中');
+    // 真实误报场景：纯静态字符串赋值
+    assert.equal(r.regex.test("el.innerHTML = '<h1>Title</h1>'"), false, '纯静态字符串不应命中');
+    assert.equal(r.regex.test('el.innerHTML = ""'), false, '空字符串不应命中');
+    // 边缘：textContent 是合法 API
+    assert.equal(r.regex.test('el.textContent = userHtml'), false, 'textContent 不应命中');
+  });
+
+  test('DEPS-PIN-ANY 覆盖 * 与 ~ 未锁版本，不误报精确版本', async () => {
+    const r = RULES.find((x) => x.id === 'DEPS-PIN-ANY');
+    assert.ok(r, 'DEPS-PIN-ANY 规则存在');
+    const block = (dep) => `"dependencies": { ${dep} }`;
+    assert.equal(r.regex.test(block('"lodash": "*"')), true, '"*" 未锁版本应命中');
+    assert.equal(r.regex.test(block('"axios": "^1.4.0"')), true, '"^" 未锁版本应命中');
+    assert.equal(r.regex.test(block('"y": "~1.2.3"')), true, '"~" 未锁版本应命中');
+    assert.equal(r.regex.test(block('"axios": "1.4.0"')), false, '精确版本不应命中');
+  });
+
+  test('真实性基准达到 excellent（≥0.95 F1）', async () => {
+    const { execSync } = await import('node:child_process');
+    // 从项目根运行基准（bench 退出码 0 表示满分达标；2 表示有 FP/FN）
+    const out = execSync('node benchmark/bench.js --verdict', { encoding: 'utf8', cwd: process.cwd() });
+    const json = JSON.parse(out.trim());
+    assert.ok(json.metric.f1 >= 0.95, `基准 F1 应 ≥0.95，实际 ${json.metric.f1}`);
+    assert.equal(json.metric.FP, 0, `假阳性应为 0，实际 ${json.metric.FP}`);
+    assert.equal(json.metric.FN, 0, `漏报应为 0，实际 ${json.metric.FN}`);
+  });
+});

@@ -4,7 +4,7 @@ import { scanDirectory, summarize } from '../lib/scanner.js';
 import { patrol } from '../lib/patrol.js';
 import { RULES } from '../lib/rules/index.js';
 
-const VERSION = '0.4.1';
+const VERSION = '0.5.0';
 
 function usage() {
   console.log(`aiscan — AI 辅助代码安全审计（零依赖）v${VERSION}

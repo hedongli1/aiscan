@@ -17,7 +17,9 @@ jobs:
           node-version: 24 # 与开发环境一致（v0.3.0 的 221 条 gitleaks 规则在 24 下全部编译通过；22 下有 16 条 RE2 语法差异）
       - name: 运行单元测试
         run: npm test
-      - name: 用 aiscan 扫描自身源码（dogfooding）
+      - name: 真实性基准（precision/recall 必须全绿）
+        run: node benchmark/bench.js
+      - name: 用 aiscan 扫描自身源码（dogfooding，benchmark/ 是规则描述数据，不参与自扫）
         run: node bin/aiscan.js lib bin --severity=high
       - name: 扫描漏洞演示文件（应检出 11 项）
         run: node bin/aiscan.js fixtures/demo.js --quiet

@@ -1,0 +1,105 @@
+{
+  "_comment": "aiscan 真实性基准 manifest。每条基准 fixture 声明其期望命中的 finding（file:line + ruleId）。bench.js 扫描 fixtures/bench/ 后与此比对，算出 precision/recall。新增基准 fixture 时同步在此登记 expected；非本类别但可预期的规则命中也如实登记，保证分数可信而非虚高。行号以 fixtures 实际内容为准（grep -n 核对）。",
+
+  "fixtures": [
+    {
+      "file": "inj-sql.js",
+      "category": "injection",
+      "title": "SQL 注入：真实拼接 vs 参数化对比",
+      "expected": [
+        { "line": 6, "ruleId": "INJ-SQL-CONCAT", "reason": "模板字符串 SELECT...${}" },
+        { "line": 12, "ruleId": "INJ-SQL-CONCAT", "reason": "字符串拼接 DELETE...+" }
+      ],
+      "shouldNotFind": [
+        { "line": 17, "ruleId": "INJ-SQL-CONCAT", "reason": "参数化查询 ? 不应命中" }
+      ]
+    },
+    {
+      "file": "inj-command.js",
+      "category": "injection",
+      "title": "命令注入：exec/spawn 拼接",
+      "expected": [
+        { "line": 4, "ruleId": "INJ-COMMAND", "reason": "exec 拼接" },
+        { "line": 7, "ruleId": "INJ-COMMAND", "reason": "spawn 拼接" }
+      ],
+      "shouldNotFind": [
+        { "line": 11, "ruleId": "INJ-COMMAND", "reason": "正则字面量 .exec() 不应误报（v0.4.1 修复）" }
+      ]
+    },
+    {
+      "file": "xss-inner.js",
+      "category": "xss",
+      "title": "DOM XSS：innerHTML 动态赋值",
+      "expected": [
+        { "line": 3, "ruleId": "XSS-INNERHTML", "reason": "innerHTML = userHtml 动态赋值（v0.5.0 修复漏报）" }
+      ],
+      "shouldNotFind": []
+    },
+    {
+      "file": "crypto-weak.js",
+      "category": "crypto",
+      "title": "弱加密：md5/DES",
+      "expected": [
+        { "line": 4, "ruleId": "CRYPTO-WEAK-MD5", "reason": "createHash('md5')" },
+        { "line": 7, "ruleId": "CRYPTO-WEAK-CIPHER", "reason": "createCipheriv('des-cbc')" }
+      ],
+      "shouldNotFind": [
+        { "line": 10, "ruleId": "CRYPTO-WEAK-CIPHER", "reason": "注释里的 ECB 裸词不应误报" }
+      ]
+    },
+    {
+      "file": "secret-cloud.js",
+      "category": "secret",
+      "title": "云密钥：AWS AKIA 真实格式",
+      "expected": [
+        { "line": 3, "ruleId": "SECRET-AWS" },
+        { "line": 4, "ruleId": "SECRET-PASSWORD-VAR", "reason": "secret: 赋值高熵串，语义正确" }
+      ],
+      "shouldNotFind": []
+    },
+    {
+      "file": "path-traversal.js",
+      "category": "injection",
+      "title": "路径穿越：readFile 拼接 query",
+      "expected": [
+        { "line": 5, "ruleId": "INJ-PATH-TRAVERSAL" }
+      ],
+      "shouldNotFind": []
+    },
+    {
+      "file": "tls-insecure.js",
+      "category": "tls",
+      "title": "TLS：rejectUnauthorized:false",
+      "expected": [
+        { "line": 5, "ruleId": "TLS-INSECURE" }
+      ],
+      "shouldNotFind": []
+    },
+    {
+      "file": "supply-chain.js",
+      "category": "supply-chain",
+      "title": "供应链：未锁定依赖版本",
+      "expected": [
+        { "line": 2, "ruleId": "DEPS-PIN-ANY", "reason": "依赖块起点（命中的是依赖块，lodash '*' 未锁）" }
+      ],
+      "shouldNotFind": []
+    },
+    {
+      "file": "benign-clean.js",
+      "category": "benign",
+      "title": "干净代码：不应产生任何 high+ 发现",
+      "expected": [],
+      "shouldNotFind": []
+    }
+  ],
+
+  "tolerances": {
+    "_note": "真实性评分：precision = TP/(TP+FP)；recall = TP/(TP+FN)。TP=期望命中且命中；FP=不应命中却命中；FN=期望命中却未命中。整体分数=R(recall) 与 P(precision) 的调和均值（F1）。",
+    "gradeThresholds": {
+      "excellent": 0.95,
+      "good": 0.85,
+      "fair": 0.70,
+      "poor": 0.0
+    }
+  }
+}

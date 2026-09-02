@@ -29,6 +29,28 @@
 
 > 以上结果全部可由 CI 复现：点徽章看运行历史，或本地 `npm test`。
 
+## 🔬 真实性基准（可测量，不做空洞承诺）
+
+本项目自带一套 **ground-truth 基准**：扫描 `fixtures/bench/` 后对照 `benchmark/manifest.json`
+计算 **precision / recall**——不靠"demo 能扫出来"自证，而是给出可复现、可回归的客观指标。
+
+```
+真正例 TP: 12   假阳性 FP: 0   漏报 FN: 0
+precision(检出可信度): 100.0%
+recall(检出覆盖度):    100.0%
+F1: 100.0%  → EXCELLENT
+```
+
+- 基准 fixture 覆盖 8 类真实漏洞模式（SQL/命令注入、XSS、弱加密、云密钥、路径穿越、TLS、供应链）
+- 含**反例**专测误报：纯静态 innerHTML 不应命中、正则 `.exec()` 不应命中、注释裸词不应命中
+- 运行 `node benchmark/bench.js` 复现；已接入 CI，回归即失败
+- **基准真的暴露并逼修了 2 个漏报**（见下），不只是装门面：
+
+| v0.5.0 修复 | 基准暴露 | 根因 |
+|---|---|---|
+| XSS 规则 | `innerHTML = userHtml` 漏报 | 旧规则只认 req/query/input 等固定变量名，真实代码变量名任意 |
+| DEPS-PIN-ANY 规则 | `"lodash": "*"` 漏报 | 旧规则只匹配 `^` 前缀，漏掉更危险的 `*` 未锁版本 |
+
 ## 🚀 快速开始
 
 Github 上的首次安装（**GitHub Packages** 发布，需配置一次）：
