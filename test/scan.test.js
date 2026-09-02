@@ -163,3 +163,33 @@ describe('gitleaks 移植规则（v0.3.0 二次创作）', () => {
     }
   });
 });
+
+describe('真实仓库扫描回归（v0.4.1 修复的注入规则误报）', () => {
+  test('INJ-COMMAND 不误报正则字面量的 .exec() 方法', async () => {
+    const r = RULES.find((x) => x.id === 'INJ-COMMAND');
+    assert.equal(r.regex.test("/^(?<n>.+)$/v.exec(`${url}`)"), false, '正则 .exec 不应命中命令注入');
+    assert.equal(r.regex.test("mtch = regex.exec(str);"), false, '对象 .exec 不应命中');
+    assert.equal(r.regex.test("exec('ls -la ' + input)"), true, '真 exec 拼接应命中');
+  });
+
+  test('INJ-SQL-CONCAT 不误报 delete 普通动词，且保留真 SQL', async () => {
+    const r = RULES.find((x) => x.id === 'INJ-SQL-CONCAT');
+    assert.equal(r.regex.test('throw new Error(`to delete the ${key} header`)'), false, 'delete 动词不应判为 SQL');
+    assert.equal(r.regex.test('const q = `SELECT * FROM users WHERE id = ${id}`'), true, '模板 SQL 应命中');
+    assert.equal(r.regex.test("db.query('DELETE FROM users WHERE id = ' + id)"), true, 'DELETE FROM 拼接应命中');
+  });
+
+  test('HTTP header 名黑名单：set-cookie 等不作为密钥', async () => {
+    const { mkdtemp, writeFile, rm } = await import('node:fs/promises');
+    const os = await import('node:os');
+    const path = await import('node:path');
+    const { scanDirectory } = await import('../lib/scanner.js');
+    // 自建临时目录（无外部依赖，CI 稳定），写入常见 header 名列表
+    const tmp = await mkdtemp(path.join(os.tmpdir(), 'aiscan-hdr-'));
+    await writeFile(path.join(tmp, 'hdr.js'), "const names = ['set-cookie', 'keep-alive', 'transfer-encoding', 'authorization', 'x-api-key'];", 'utf8');
+    const { findings } = await scanDirectory(tmp);
+    await rm(tmp, { recursive: true, force: true });
+    const hdrHits = findings.filter((f) => f.ruleId === 'GL-generic-api-key');
+    assert.equal(hdrHits.length, 0, 'header 名列表不应判为 API key');
+  });
+});
