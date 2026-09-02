@@ -2,5 +2,14 @@
   "_comment": "aiscan-patrol 定时巡检配置。autoDiscover=true：每日自动从 GitHub Search 发现活跃开源仓库（按 star 排序、近期有更新、日期做种子轮换）；maxPerDay：每日最多扫描的仓库数，扫够即停。想改回固定清单：autoDiscover 改 false 并填 repos 数组。",
   "autoDiscover": true,
   "maxPerDay": 5,
-  "repos": []
+  "repos": [],
+  "_scheduling": {
+    "_guide": "定时调度在 .github/workflows/patrol.yml 中配置。",
+    "examples": {
+      "daily": "0 3 * * * (每天 UTC 03:00)",
+      "twice_daily": "0 2,14 * * * (每12小时)",
+      "every_6_hours": "0 */6 * * * (每6小时)",
+      "weekly_monday": "0 3 * * 1 (每周一)"
+    }
+  }
 }

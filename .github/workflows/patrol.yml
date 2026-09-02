@@ -2,8 +2,29 @@ name: aiscan-patrol
 
 on:
   schedule:
-    - cron: "0 3 * * *" # 每日巡检自动发现的开源仓库（不扫自己账号）
-  workflow_dispatch: # 支持手动触发
+    # 默认每天 UTC 03:00 执行（北京时间 11:00）
+    # 自定义定时提示：
+    #   - 每天一次: "0 3 * * *" (UTC 03:00)
+    #   - 每天两次（每12小时）: "0 2,14 * * *"
+    #   - 每6小时一次: "0 */6 * * *"
+    #   - 每周一执行: "0 3 * * 1"
+    - cron: "0 3 * * *"
+  workflow_dispatch: # 支持在 GitHub Actions 界面手动触发（随时按需执行）
+    inputs:
+      custom_targets:
+        description: '临时自定义扫描目标（逗号分隔的 owner/repo，例如: expressjs/express,vuejs/core）'
+        required: false
+        default: ''
+      severity:
+        description: '最低警报级别过滤'
+        required: false
+        default: 'high'
+        type: choice
+        options:
+          - critical
+          - high
+          - medium
+          - low
 
 permissions:
   issues: write
@@ -22,12 +43,20 @@ jobs:
         with:
           node-version: 24
 
-      - name: 运行 aiscan 巡检（自动发现目标）
+      - name: 运行 aiscan 巡检（支持定时调度与手动自定义输入）
         env:
           GITHUB_TOKEN: ${{ secrets.PATROL_TOKEN || secrets.GITHUB_TOKEN }}
+          CUSTOM_TARGETS: ${{ inputs.custom_targets }}
+          SEV: ${{ inputs.severity || 'high' }}
         run: |
           set +e
-          node bin/aiscan.js --patrol-file=patrol-targets.json --patrol-sev=high --json > /tmp/patrol-report.json 2> /tmp/patrol-output.txt
+          if [ -n "$CUSTOM_TARGETS" ]; then
+            echo "🚀 使用手动自定义目标: $CUSTOM_TARGETS"
+            node bin/aiscan.js --patrol-repo="$CUSTOM_TARGETS" --patrol-sev="$SEV" --json > /tmp/patrol-report.json 2> /tmp/patrol-output.txt
+          else
+            echo "⏰ 运行定时巡检计划 (配置自 patrol-targets.json)"
+            node bin/aiscan.js --patrol-file=patrol-targets.json --patrol-sev="$SEV" --json > /tmp/patrol-report.json 2> /tmp/patrol-output.txt
+          fi
           PATROL_EXIT=$?
           set -e
           cat /tmp/patrol-output.txt
