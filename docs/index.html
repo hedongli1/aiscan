@@ -62,7 +62,7 @@
   }
   const results = await Promise.all(files.map(async (f) => {
     try {
-      const r = await fetch('history/' + f);
+const r = await fetch('history/' + f);
       if (!r.ok) return null;
       return await r.json();
     } catch { return null; }
@@ -83,47 +83,118 @@
       totalHigh += (f.summary?.counts?.high) || 0;
     }
   }
-  document.getElementById('cards').innerHTML = `
-    <div class="card"><div class="num blue">${days.length}</div><div class="lbl">巡检天数</div></div>
-    <div class="card"><div class="num">${totalScanned}</div><div class="lbl">累计扫描仓库</div></div>
-    <div class="card"><div class="num orange">${totalFlagged}</div><div class="lbl">告警仓库</div></div>
-    <div class="card"><div class="num red">${totalCrit}</div><div class="lbl">Critical 发现</div></div>
-    <div class="card"><div class="num red">${totalHigh}</div><div class="lbl">High 发现</div></div>`;
-  // 时间线
+  // 汇总卡片（DOM API 构建，不使用 innerHTML —— 消除 DOM XSS 面）
+  const cardsEl = document.getElementById('cards');
+  const cardData = [
+    ['blue', days.length, '巡检天数'],
+    ['', totalScanned, '累计扫描仓库'],
+    ['orange', totalFlagged, '告警仓库'],
+    ['red', totalCrit, 'Critical 发现'],
+    ['red', totalHigh, 'High 发现'],
+  ];
+  for (const [color, num, label] of cardData) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const n = document.createElement('div');
+    n.className = 'num ' + color;
+    n.textContent = num;
+    const l = document.createElement('div');
+    l.className = 'lbl';
+    l.textContent = label;
+    card.append(n, l);
+    cardsEl.appendChild(card);
+  }
+
+  // 时间线（DOM API 构建）
   const container = document.getElementById('days');
   for (const d of days) {
     const flagged = d.report.flaggedRepos || [];
     const clean = (d.report.scanned || 0) - flagged.length;
     const dayEl = document.createElement('div');
     dayEl.className = 'day';
-    let repoRows = '';
-    // 告警仓库在前
+    const det = document.createElement('details');
+    det.open = true;
+    const sum = document.createElement('summary');
+    sum.className = 'day-head';
+    const t = document.createElement('span');
+    t.className = 'day-title';
+    t.textContent = '📅 ' + d.date;
+    const st = document.createElement('span');
+    st.className = 'day-stats';
+    st.textContent = `扫描 ${d.report.scanned || 0} · 告警 ${flagged.length} · 干净 ${clean}`;
+    sum.append(t, st);
+
+    const repos = document.createElement('div');
+    repos.className = 'repos';
+    if (flagged.length === 0) {
+      const row = document.createElement('div');
+      row.className = 'repo-row';
+      const name = document.createElement('span');
+      name.className = 'repo-name green';
+      name.textContent = '✅ 全部干净';
+      row.appendChild(name);
+      repos.appendChild(row);
+    }
     for (const f of flagged) {
       const g = f.summary?.grade || '?';
-      const cnt = f.summary?.counts || {};
-      const details = (f.detail || []).slice(0, 8).map(x =>
-        `<tr><td><span class="sev s-${x.severity}">${x.severity.toUpperCase()}</span>${x.ruleId}</td>
-         <td><code>${x.file}:${x.line}</code></td>
-         <td style="color:#8b949e">${(x.snippet || '').slice(0, 60)}</td></tr>`).join('');
-      const more = (f.detail || []).length > 8 ? `<tr><td colspan="3" style="color:#8b949e">…共 ${f.detail.length} 项</td></tr>` : '';
-      repoRows += `
-        <details class="repo-row" style="display:block">
-          <summary class="repo-row" style="display:flex">
-            <span class="repo-name">🚨 <a href="https://github.com/${f.repo}" target="_blank">${f.repo}</a></span>
-            <span class="findings">${f.findings} 告警</span>
-            <span class="repo-score">评分 ${f.summary?.securityScore ?? '?'}<span class="grade g${g}">${g}</span></span>
-          </summary>
-          <table class="detail-table"><tbody>${details}${more}</tbody></table>
-        </details>`;
+      const rep = document.createElement('details');
+      rep.className = 'repo-row';
+      rep.style.display = 'block';
+      const s2 = document.createElement('summary');
+      s2.className = 'repo-row';
+      s2.style.display = 'flex';
+      const nm = document.createElement('span');
+      nm.className = 'repo-name';
+      const a = document.createElement('a');
+      a.href = `https://github.com/${f.repo}`;
+      a.target = '_blank';
+      a.textContent = '🚨 ' + f.repo;
+      nm.appendChild(a);
+      const cnt = document.createElement('span');
+      cnt.className = 'findings';
+      cnt.textContent = `${f.findings} 告警`;
+      const sc = document.createElement('span');
+      sc.className = 'repo-score';
+      const ga = document.createElement('span');
+      ga.className = 'grade g' + g;
+      ga.textContent = g;
+      sc.textContent = `评分 ${f.summary?.securityScore ?? '?'} `;
+      sc.appendChild(ga);
+      s2.append(nm, cnt, sc);
+
+      const tb = document.createElement('table');
+      tb.className = 'detail-table';
+      const body = document.createElement('tbody');
+      for (const x of (f.detail || []).slice(0, 8)) {
+        const tr = document.createElement('tr');
+        const d1 = document.createElement('td');
+        const sev = document.createElement('span');
+        sev.className = 'sev s-' + x.severity;
+        sev.textContent = (x.severity || '').toUpperCase();
+        d1.append(sev, document.createTextNode(x.ruleId || ''));
+        const d2 = document.createElement('td');
+        d2.appendChild(document.createTextNode(`${x.file}:${x.line}`));
+        const d3 = document.createElement('td');
+        d3.style.color = '#8b949e';
+        d3.textContent = (x.snippet || '').slice(0, 60);
+        tr.append(d1, d2, d3);
+        body.appendChild(tr);
+      }
+      if ((f.detail || []).length > 8) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = 3;
+        td.style.color = '#8b949e';
+        td.textContent = '…共 ' + f.detail.length + ' 项';
+        tr.appendChild(td);
+        body.appendChild(tr);
+      }
+      tb.appendChild(body);
+      rep.append(s2, tb);
+      repos.appendChild(rep);
     }
-    dayEl.innerHTML = `
-      <details open>
-        <summary class="day-head">
-          <span class="day-title">📅 ${d.date}</span>
-          <span class="day-stats">扫描 ${d.report.scanned} · 告警 ${flagged.length} · 干净 ${clean}</span>
-        </summary>
-        <div class="repos">${repoRows || '<div class="repo-row"><span class="repo-name green">✅ 全部干净</span></div>'}</div>
-      </details>`;
+    det.append(sum, repos);
+    dayEl.appendChild(det);
     container.appendChild(dayEl);
   }
 })();

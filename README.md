@@ -10,7 +10,7 @@
 
 | 能力 | 说明 |
 | --- | --- |
-| 🔍 236 条检测规则 | 内置 15 条（注入/XSS/弱加密/供应链）+ gitleaks 移植 221 条（AWS/GCP/Azure/Stripe/GitHub/OpenAI 等主流服务密钥） |
+| 🔍 24 条内置检测规则 | 注入（SQL/SSRF/命令/重定向/路径穿越）、XSS（innerHTML/jQuery/Vue/React）、加密（弱算法/硬编码IV/弱随机/JWT）、密钥、供应链 + gitleaks 移植 221 条（AWS/GCP/Azure/Stripe/GitHub/OpenAI 等主流服务密钥） |
 | 🧠 熵启发式（AI） | 基于香农熵 + 长度 + 字符混合度，自动识别高熵疑似密钥，附置信度评分 |
 | 📦 零依赖 | 只用 Node 内置 `fs/path/test`，无 npm 安装负担 |
 | 🚀 GitHub Action | 一行 YAML 接入任意仓库，自动上传 SARIF 到 Security 标签页 |
@@ -22,9 +22,9 @@
 | 徽章 | 说明 |
 | --- | --- |
 | ![CI](https://img.shields.io/github/actions/workflow/status/hedongli1/aiscan/ci.yml?label=CI&logo=github) | 测试 + dogfooding 流水线（点击查看运行历史） |
-| ![tests](https://img.shields.io/badge/tests-14%20passed-brightgreen) | `node --test` 单元测试全部通过 |
+| ![tests](https://img.shields.io/badge/tests-31%20passed-brightgreen) | `node --test` 单元测试全部通过 |
 | ![self-scan](https://img.shields.io/badge/self%20scan-100%2FA-brightgreen) | aiscan 扫描自身源码：0 发现，评分 100/A |
-| ![demo](https://img.shields.io/badge/demo%20scan-11%20findings-red) | 漏洞演示文件：检出 11 项（5 critical / 5 high / 1 medium） |
+| ![demo](https://img.shields.io/badge/demo%20scan-14%20findings-red) | 漏洞演示文件：检出 14 项（7 critical / 6 high / 1 medium） |
 | ![license](https://img.shields.io/github/license/hedongli1/aiscan) | MIT |
 
 > 以上结果全部可由 CI 复现：点徽章看运行历史，或本地 `npm test`。
@@ -35,21 +35,23 @@
 计算 **precision / recall**——不靠"demo 能扫出来"自证，而是给出可复现、可回归的客观指标。
 
 ```
-真正例 TP: 12   假阳性 FP: 0   漏报 FN: 0
+真正例 TP: 30   假阳性 FP: 0   漏报 FN: 0
 precision(检出可信度): 100.0%
 recall(检出覆盖度):    100.0%
 F1: 100.0%  → EXCELLENT
 ```
 
-- 基准 fixture 覆盖 8 类真实漏洞模式（SQL/命令注入、XSS、弱加密、云密钥、路径穿越、TLS、供应链）
-- 含**反例**专测误报：纯静态 innerHTML 不应命中、正则 `.exec()` 不应命中、注释裸词不应命中
+- 基准 fixture 覆盖 14 类真实漏洞模式：SQL（含 Sequelize/knex ORM 原生拼接）、命令注入、SSRF、开放重定向、DOM XSS（innerHTML/jQuery/Vue v-html/React dangerouslySetInnerHTML）、弱加密（MD5/DES/AES-ECB/CBC）、硬编码 IV/密钥、弱随机 token、JWT 硬编码、云密钥、路径穿越、TLS、供应链（未锁版本/npm 投毒脚本）
+- 含**反例**专测误报：纯静态 innerHTML、相对路径 fetch 模板、固定内网 API、`.exec()` 正则、`.text()` 安全 API、参数化 SQL、`v-text`、`process.env` 密钥、`randomBytes`、注释裸词
 - 运行 `node benchmark/bench.js` 复现；已接入 CI，回归即失败
-- **基准真的暴露并逼修了 2 个漏报**（见下），不只是装门面：
+- **基准不是装门面——它真的暴露并逼修了多个问题**（全部带根因，见下）：
 
-| v0.5.0 修复 | 基准暴露 | 根因 |
-|---|---|---|
-| XSS 规则 | `innerHTML = userHtml` 漏报 | 旧规则只认 req/query/input 等固定变量名，真实代码变量名任意 |
-| DEPS-PIN-ANY 规则 | `"lodash": "*"` 漏报 | 旧规则只匹配 `^` 前缀，漏掉更危险的 `*` 未锁版本 |
+| 版本 | 修复 | 基准暴露 | 根因 |
+|---|---|---|---|
+| v0.5.0 | XSS 规则 | `innerHTML = userHtml` 漏报 | 旧规则只认固定变量名，真实代码变量名任意 |
+| v0.5.0 | DEPS-PIN-ANY 规则 | `"lodash": "*"` 漏报 | 旧规则只匹配 `^` 前缀，漏掉 `*` 未锁版本 |
+| v0.6.0 | 9 类新规则 | SSRF / 开放重定向 / AES-ECB·CBC / 硬编码IV·随机 / jQuery·Vue·React XSS / JWT / npm投毒 全部漏报 | 原规则库无这些真实高频类目，扩基准后全部暴露 |
+| v0.6.0 | SSRF 规则 | `fetch(\`/api/users/\${id}\`)` 相对路径误报 | 模板插值判断过宽，补"排除相对路径/固定内网"反例 |
 
 ## 🚀 快速开始
 
@@ -83,7 +85,7 @@ node bin/aiscan.js . --report html       # 生成 HTML 报告
 
 ## 🧪 真实扫描输出
 
-对 `fixtures/demo.js`（故意埋入 11 种漏洞）运行：
+对 `fixtures/demo.js`（故意埋入 10+ 种漏洞）运行：
 
 ```
 🔍 aiscan — AI 辅助代码安全审计
@@ -106,7 +108,7 @@ node bin/aiscan.js . --report html       # 生成 HTML 报告
    🧠 AI 启发式，置信度 100%
    ── n const apiToken = 'ghp_xK9mQ2vL8nR4tW7zB1cE5hJ3fG6sD8aP2qW4eR6tY9uI';
 
-📊 汇总：11 个发现 | 🔴critical=5 🟠high=5 🟡medium=1 ⚪low=0
+📊 汇总：14 个发现 | 🔴critical=7 🟠high=6 🟡medium=1 ⚪low=0
 🏆 安全评分：0/100（等级 F）
 ```
 
@@ -161,10 +163,19 @@ aiscan 已在两个真实 GitHub 项目上运行安全审查：
 | INJ-PATH-TRAVERSAL | high | 注入 | 文件路径穿越 |
 | XSS-INNERHTML | high | XSS | DOM XSS |
 | CRYPTO-WEAK-MD5 | medium | 加密 | MD5/SHA1 |
-| CRYPTO-WEAK-CIPHER | medium | 加密 | DES/3DES/RC4 |
+| CRYPTO-WEAK-CIPHER | medium | 加密 | DES/3DES/RC4/AES-ECB·CBC |
 | TLS-INSECURE | high | 加密 | rejectUnauthorized=false |
 | LOG-SENSITIVE | medium | 日志 | 日志打印敏感信息 |
 | DEPS-PIN-ANY | low | 供应链 | 依赖版本未锁死（^ 前缀） |
+| INJ-SSRF | high | 注入 | SSRF（fetch/axios 请求用户可控 URL） |
+| INJ-REDIRECT | medium | 注入 | 开放重定向（res.redirect 用户可控） |
+| CRYPTO-HARDCODED-IV | high | 加密 | 硬编码 IV / 密钥 |
+| CRYPTO-WEAK-RANDOM | high | 加密 | Math.random 生成安全敏感材料 |
+| XSS-JQUERY-HTML | high | XSS | jQuery .html()/append() |
+| XSS-VUE-VHTML | high | XSS | Vue v-html 指令 |
+| XSS-REACT-DANGEROUS | high | XSS | React dangerouslySetInnerHTML |
+| JWT-HARDCODED-SECRET | high | 加密 | JWT 硬编码 secret / alg:none |
+| DEPS-UNTRUSTED-SCRIPT | high | 供应链 | npm 安装钩子下载执行 |
 
 ## 🔬 熵启发式（AI）原理
 

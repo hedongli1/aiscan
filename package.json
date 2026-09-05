@@ -1,6 +1,6 @@
 {
   "name": "@hedongli1/aiscan",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "AI-assisted code security scanner — zero-dependency static analysis + entropy-based secret detection + SARIF output",
   "license": "MIT",
   "type": "module",

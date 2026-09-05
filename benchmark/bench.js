@@ -54,7 +54,7 @@ const th = manifest.tolerances.gradeThresholds;
 const grade = f1 >= th.excellent ? 'excellent' : f1 >= th.good ? 'good' : f1 >= th.fair ? 'fair' : 'poor';
 
 const report = {
-  version: '0.5.0',
+  version: '0.6.0',
   date: '2026-09-02',
   metric: { TP, FP, FN, precision: Number(precision.toFixed(4)), recall: Number(recall.toFixed(4)), f1: Number(f1.toFixed(4)), grade },
   details,
