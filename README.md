@@ -1,10 +1,10 @@
-# 🛡️ aiscan — AI 辅助代码安全审计
+# 🛡️ aiscan — 零配置静态代码安全审计（SAST）
 
-> 零依赖 · 静态分析 · 熵启发式密钥检测 · GitHub Action 开箱即用
+> **static code security scanner · secret leak detection · zero-config SAST** · 熵启发式密钥检测 · GitHub Action 开箱即用 · gitleaks 规则集兼容
 
-**aiscan** 是一个 AI 辅助的静态代码安全审计工具：用**模式匹配 + 香农熵启发式**扫描代码库，检测**硬编码密钥、注入漏洞、XSS、弱加密、供应链风险**，并生成 **SARIF 报告**（GitHub Security 原生支持）。
+**aiscan** 是一个**开箱即用的静态代码安全扫描器（SAST）**：用**模式匹配 + 香农熵启发式**扫描代码库，检测**硬编码密钥泄漏（secret detection）、SQL/命令/SSRF 注入、XSS、弱加密、供应链投毒**六大类风险，并生成 **SARIF 报告**（GitHub Security / CodeQL 生态原生支持）。可作为 **gitleaks / Semgrep / Trivy** 的轻量替代——只跑一条命令，不装任何运行时。
 
-纯 Node 内置模块实现，**零依赖**，无需任何安装即可克隆运行。已发布 GitHub Packages（`@hedongli1/aiscan`）与 GitHub Action，可通过 `npm install -g @hedongli1/aiscan` 或 one-line Action 使用。可以用它扫描**别人的仓库** —— 甚至它自己（dogfooding）。
+纯 Node 内置模块实现，**零依赖（zero-dependency）**，无需任何安装即可克隆运行。已发布 GitHub Packages（`@hedongli1/aiscan`）与 GitHub Action，可通过 `npm install -g @hedongli1/aiscan` 或 one-line Action 接入任意仓库的 CI。多语言支持，覆盖 **JavaScript / TypeScript / Python / Go / Shell / Dockerfile / 配置文件**等数十种文件类型；用它扫描**别人的仓库** —— 甚至它自己（dogfooding）。
 
 ## ✨ 特性
 
