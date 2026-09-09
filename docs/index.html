@@ -7,34 +7,37 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e6edf3; padding: 20px; }
-  .wrap { max-width: 880px; margin: 0 auto; }
+  .wrap { max-width: 960px; margin: 0 auto; }
   h1 { font-size: 24px; margin-bottom: 4px; }
-  .sub { color: #8b949e; font-size: 13px; margin-bottom: 24px; }
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 28px; }
-  .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 18px; }
-  .card .num { font-size: 34px; font-weight: 700; }
+  .sub { color: #8b949e; font-size: 13px; margin-bottom: 20px; }
+  /* 统计卡：固定 5 列等宽，杜绝最后一卡被挤到下一行 */
+  .cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 28px; }
+  @media (max-width: 720px) { .cards { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 480px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 14px 12px; min-width: 0; }
+  .card .num { font-size: 30px; font-weight: 700; line-height: 1.15; }
   .card .lbl { color: #8b949e; font-size: 12px; margin-top: 4px; }
   .green { color: #3fb950; } .red { color: #f85149; } .orange { color: #ffa657; } .blue { color: #58a6ff; }
-  .day { background: #161b22; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 14px; overflow: hidden; }
-  .day-head { padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+  .day { background: #161b22; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+  .day-head { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
   .day-head:hover { background: #1c2129; }
   .day-title { font-weight: 600; font-size: 15px; }
   .day-stats { color: #8b949e; font-size: 13px; }
-  .repos { border-top: 1px solid #21262d; padding: 8px 0; }
-  .repo-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 18px; }
+  .repos { border-top: 1px solid #21262d; padding: 4px 0; }
+  .repo-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 16px; }
   .repo-row:hover { background: #1c2129; }
-  .repo-name { font-size: 14px; }
+  .repo-name { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .repo-name a { color: #58a6ff; text-decoration: none; }
   .repo-score { font-size: 13px; color: #8b949e; white-space: nowrap; }
-  .grade { display: inline-block; width: 26px; height: 26px; line-height: 26px; text-align: center; border-radius: 6px; font-weight: 700; font-size: 13px; margin-left: 8px; }
+  .grade { display: inline-block; width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 6px; font-weight: 700; font-size: 13px; margin-left: 8px; }
   .gA { background: #1b4332; color: #3fb950; } .gB { background: #1f3325; color: #7ee787; }
   .gC { background: #3d2e00; color: #d29922; } .gD { background: #3d2400; color: #ffa657; }
   .gF { background: #4a1418; color: #f85149; }
-  .findings { margin-left: auto; margin-right: 12px; font-size: 13px; }
+  .findings { margin-left: auto; margin-right: 12px; font-size: 13px; white-space: nowrap; }
   details summary { cursor: pointer; list-style: none; }
   details summary::-webkit-details-marker { display: none; }
-  .detail-table { margin: 4px 18px 14px; border-collapse: collapse; font-size: 12px; }
-  .detail-table td { border-top: 1px solid #21262d; padding: 8px 4px 8px 0; vertical-align: top; }
+  .detail-table { margin: 2px 16px 10px; border-collapse: collapse; font-size: 12px; }
+  .detail-table td { border-top: 1px solid #21262d; padding: 6px 4px 6px 0; vertical-align: top; }
   .sev { padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 6px; }
   .s-critical { background: #4a1418; color: #f85149; } .s-high { background: #3d2400; color: #ffa657; }
   code { background: #21262d; padding: 1px 5px; border-radius: 4px; font-size: 11px; word-break: break-all; }
