@@ -47,6 +47,27 @@ jobs:
         with:
           node-version: 24
 
+      # 凭据自检：PATROL_TOKEN 到期时会静默回落到 GITHUB_TOKEN，
+      # 而 GITHUB_TOKEN 只能访问本仓库，无法读取 patrol 目标（其他仓库）。
+      # 降级本身不会报错，只会让巡检范围悄悄缩水 —— 所以必须显式暴露。
+      - name: 凭据自检（防止 PAT 到期后静默降级）
+        env:
+          PATROL_TOKEN: ${{ secrets.PATROL_TOKEN }}
+        run: |
+          if [ -z "$PATROL_TOKEN" ]; then
+            echo "::warning title=巡检凭据已降级::未配置 PATROL_TOKEN，将回落到内置 GITHUB_TOKEN。内置 token 只能访问本仓库，无法读取其他仓库的巡检目标，本次巡检范围会大幅缩水。请检查 PATROL_TOKEN 是否已过期。"
+          else
+            CODE=$(curl -s -o /dev/null -w '%{http_code}' \
+              -H "Authorization: token $PATROL_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              https://api.github.com/user)
+            if [ "$CODE" = "200" ]; then
+              echo "✅ PATROL_TOKEN 有效（GET /user → 200）"
+            else
+              echo "::error title=巡检凭据失效::PATROL_TOKEN 已失效（GET /user → $CODE，预期 200）。请到 https://github.com/settings/tokens 重新生成并更新仓库 Secret，否则巡检将静默回落到内置 token 并大幅缩水。"
+            fi
+          fi
+
       - name: 运行 aiscan 巡检（支持定时调度与手动自定义输入）
         env:
           GITHUB_TOKEN: ${{ secrets.PATROL_TOKEN || secrets.GITHUB_TOKEN }}
