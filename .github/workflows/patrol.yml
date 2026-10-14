@@ -49,12 +49,15 @@ jobs:
 
       # 凭据自检：PATROL_TOKEN 到期时会静默回落到 GITHUB_TOKEN，
       # 而 GITHUB_TOKEN 只能访问本仓库，无法读取 patrol 目标（其他仓库）。
-      # 降级本身不会报错，只会让巡检范围悄悄缩水 —— 所以必须显式暴露。
+      # 降级本身不会报错，只会让巡检范围悄悄缩水 —— 所以必须显式暴露，
+      # 并通过 output 驱动下一步真正降级，避免带着已失效的 PAT 去调 API 直接 401 崩掉。
       - name: 凭据自检（防止 PAT 到期后静默降级）
+        id: creds
         env:
           PATROL_TOKEN: ${{ secrets.PATROL_TOKEN }}
         run: |
           if [ -z "$PATROL_TOKEN" ]; then
+            echo "pat_ok=false" >> "$GITHUB_OUTPUT"
             echo "::warning title=巡检凭据已降级::未配置 PATROL_TOKEN，将回落到内置 GITHUB_TOKEN。内置 token 只能访问本仓库，无法读取其他仓库的巡检目标，本次巡检范围会大幅缩水。请检查 PATROL_TOKEN 是否已过期。"
           else
             CODE=$(curl -s -o /dev/null -w '%{http_code}' \
@@ -62,15 +65,18 @@ jobs:
               -H "Accept: application/vnd.github+json" \
               https://api.github.com/user)
             if [ "$CODE" = "200" ]; then
+              echo "pat_ok=true" >> "$GITHUB_OUTPUT"
               echo "✅ PATROL_TOKEN 有效（GET /user → 200）"
             else
-              echo "::error title=巡检凭据失效::PATROL_TOKEN 已失效（GET /user → $CODE，预期 200）。请到 https://github.com/settings/tokens 重新生成并更新仓库 Secret，否则巡检将静默回落到内置 token 并大幅缩水。"
+              echo "pat_ok=false" >> "$GITHUB_OUTPUT"
+              echo "::error title=巡检凭据失效::PATROL_TOKEN 已失效（GET /user → $CODE，预期 200）。本次将降级为内置 GITHUB_TOKEN 继续巡检（范围缩水）。请到 https://github.com/settings/tokens 重新生成并更新仓库 Secret PATROL_TOKEN 以恢复全量巡检。"
             fi
           fi
 
       - name: 运行 aiscan 巡检（支持定时调度与手动自定义输入）
         env:
-          GITHUB_TOKEN: ${{ secrets.PATROL_TOKEN || secrets.GITHUB_TOKEN }}
+          # PAT 有效才用它；失效或未配置时降级为内置 GITHUB_TOKEN，保证管线不断更
+          GITHUB_TOKEN: ${{ steps.creds.outputs.pat_ok == 'true' && secrets.PATROL_TOKEN || secrets.GITHUB_TOKEN }}
           CUSTOM_TARGETS: ${{ inputs.custom_targets }}
           SEV: ${{ inputs.severity || 'high' }}
         run: |
