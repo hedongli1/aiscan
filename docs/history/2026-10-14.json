@@ -1,10 +1,254 @@
 {
   "date": "2026-10-14",
-  "generatedAt": "2026-10-14T15:32:33.241Z",
+  "generatedAt": "2026-10-14T20:22:30.086Z",
   "report": {
     "scanned": 5,
     "cleanRepos": 0,
     "flaggedRepos": [
+      {
+        "repo": "mde/ejs",
+        "findings": 17,
+        "summary": {
+          "total": 19,
+          "counts": {
+            "critical": 0,
+            "high": 17,
+            "medium": 0,
+            "low": 2,
+            "info": 0
+          },
+          "byCategory": {
+            "injection": 14,
+            "xss": 3,
+            "supply-chain": 2
+          },
+          "securityScore": 0,
+          "grade": "F"
+        },
+        "detail": [
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "bin/cli.js",
+            "line": 62,
+            "col": 13,
+            "snippet": "on () { return fs.readFileSync(path.join(__dirname, '../usage.txt')).toString(); }; let errorMessage = function (e) { switch (e.code) {",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "bin/cli.js",
+            "line": 255,
+            "col": 18,
+            "snippet": "{ let tpl = fs.readFileSync(path.resolve(process.cwd(), template), 'utf8'); output = ejs.render(tpl, vals, renderOpts(opts, templat",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "XSS-INNERHTML",
+            "severity": "high",
+            "category": "xss",
+            "title": "DOM XSS：innerHTML / document.write 写入不可信数据",
+            "message": "用户输入直接写入 DOM，存在 XSS 风险",
+            "file": "examples/client-compilation.html",
+            "line": 99,
+            "col": 25,
+            "snippet": "outputTitle.innerHTML = 'Error ' + stage; // 2. Put the stack trace into the output text area output.textCon",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "XSS-INNERHTML",
+            "severity": "high",
+            "category": "xss",
+            "title": "DOM XSS：innerHTML / document.write 写入不可信数据",
+            "message": "用户输入直接写入 DOM，存在 XSS 风险",
+            "file": "examples/client-injection.html",
+            "line": 39,
+            "col": 23,
+            "snippet": "document.body.innerHTML = html; console.log('HTML injected to <body>'); } </script> </head> <body> </body> </h",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "XSS-INNERHTML",
+            "severity": "high",
+            "category": "xss",
+            "title": "DOM XSS：innerHTML / document.write 写入不可信数据",
+            "message": "用户输入直接写入 DOM，存在 XSS 风险",
+            "file": "examples/express/views/index.ejs",
+            "line": 24,
+            "col": 19,
+            "snippet": "; $greeting.innerHTML = html; })(); </script> </body> </html>",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "jakefile.js",
+            "line": 144,
+            "col": 10,
+            "snippet": "try { fs.writeFileSync(path.join(fixtureDir, 'package.json'), JSON.stringify({ private: true, type: 'module'",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "jakefile.js",
+            "line": 152,
+            "col": 10,
+            "snippet": "herit'}); fs.writeFileSync(path.join(fixtureDir, 'cjs-smoke.cjs'), [ 'const assert = require(\"assert\");', 'const ejs",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "jakefile.js",
+            "line": 162,
+            "col": 10,
+            "snippet": "herit'}); fs.writeFileSync(path.join(fixtureDir, 'esm-smoke.mjs'), [ 'import assert from \"node:assert/strict\";', 'imp",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "jakefile.js",
+            "line": 174,
+            "col": 10,
+            "snippet": "d package. fs.writeFileSync(path.join(fixtureDir, 'brow…ke（已脱敏，原文 17 字符）.cjs'), [ 'const assert = require(\"assert\");', 'co",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "jakefile.js",
+            "line": 186,
+            "col": 10,
+            "snippet": "herit'}); fs.writeFileSync(path.join(fixtureDir, 'brow…ke（已脱敏，原文 17 字符）.mjs'), [ 'import assert from \"node:assert/strict\";',",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "jakefile.js",
+            "line": 198,
+            "col": 10,
+            "snippet": "herit'}); fs.writeFileSync(path.join(fixtureDir, 'template.ejs'), 'Hello <%= name %>'); let cliOutput = proc.execFileSync(proce",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "jakelib/ecosystem.js",
+            "line": 34,
+            "col": 10,
+            "snippet": "try { fs.writeFileSync(path.join(fixtureDir, 'package.json'), JSON.stringify({ private: true, type: 'module'",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "jakelib/ecosystem.js",
+            "line": 43,
+            "col": 10,
+            "snippet": "herit'}); fs.writeFileSync(path.join(fixtureDir, 'smoke.js'), opts.smokeEntry || BUND…RY（已脱敏，原文 19 字符）); for (let name i",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "jakelib/ecosystem.js",
+            "line": 47,
+            "col": 12,
+            "snippet": "|| {}) { fs.writeFileSync(path.join(fixtureDir, name), opts.files[name]); } let bin = path.join(fixtureDir, 'node_modul",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "jakelib/ecosystem.js",
+            "line": 270,
+            "col": 12,
+            "snippet": "try { fs.writeFileSync(path.join(fixtureDir, 'package.json'), JSON.stringify({ private: true, type: 'module'",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "jakelib/ecosystem.js",
+            "line": 278,
+            "col": 12,
+            "snippet": "rit'}); fs.writeFileSync(path.join(fixtureDir, 'smoke.ts'), [ 'import ejs from \"ejs\";', 'const out = ejs.render",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "jakelib/ecosystem.js",
+            "line": 329,
+            "col": 12,
+            "snippet": "rit'}); fs.writeFileSync(path.join(fixtureDir, 'smoke.ts'), [ 'import ejs from \"./ven…js（已脱敏，原文 23 字符）.js\";',",
+            "confidence": 92,
+            "heuristic": false
+          }
+        ]
+      },
       {
         "repo": "tiagozip/cap",
         "findings": 102,
@@ -4756,53 +5000,6 @@
             "line": 372,
             "col": 21,
             "snippet": "r = http.get(url, head…RK（已脱敏，原文 25 字符）, params={\"goodsCode\": \"00000000\",",
-            "confidence": 92,
-            "heuristic": false
-          }
-        ]
-      },
-      {
-        "repo": "Axorax/awesome-free-apps",
-        "findings": 2,
-        "summary": {
-          "total": 2,
-          "counts": {
-            "critical": 0,
-            "high": 2,
-            "medium": 0,
-            "low": 0,
-            "info": 0
-          },
-          "byCategory": {
-            "injection": 2
-          },
-          "securityScore": 80,
-          "grade": "B"
-        },
-        "detail": [
-          {
-            "ruleId": "INJ-PATH-TRAVERSAL",
-            "severity": "high",
-            "category": "injection",
-            "title": "路径穿越：未校验的文件路径拼接",
-            "message": "文件操作路径来自不可信输入",
-            "file": "tests/index.test.js",
-            "line": 18,
-            "col": 6,
-            "snippet": "\"README.md\"); fs.writeFileSync( file, [ \"[One](https://example.com/one)\", \"[Two](http://example.test/two)\", \"![",
-            "confidence": 92,
-            "heuristic": false
-          },
-          {
-            "ruleId": "INJ-PATH-TRAVERSAL",
-            "severity": "high",
-            "category": "injection",
-            "title": "路径穿越：未校验的文件路径拼接",
-            "message": "文件操作路径来自不可信输入",
-            "file": "tests/index.test.js",
-            "line": 90,
-            "col": 6,
-            "snippet": "\"README.md\"); fs.writeFileSync( file, [ \"[One](https://example.com/ok)\", \"[Duplicate](https://example.com/ok)\",",
             "confidence": 92,
             "heuristic": false
           }
