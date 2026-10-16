@@ -82,20 +82,24 @@ function norm(it) {
   };
 }
 
-function loadNotes() {
-  const map = {};
+/** 读取上一版数据：既用于保留中文解读，也用于保留人工精选条目 */
+function loadPrev() {
+  const notes = {}, byCat = {};
   try {
     const old = JSON.parse(fs.readFileSync(OUT_FILE, 'utf8'));
-    (old.categories || []).forEach(c => (c.tools || []).forEach(t => {
-      if (t.summary) map[t.full_name] = { summary: t.summary, tags: t.tags || [] };
-    }));
+    (old.categories || []).forEach(c => {
+      byCat[c.id] = c.tools || [];
+      (c.tools || []).forEach(t => {
+        if (t.summary) notes[t.full_name] = { summary: t.summary, tags: t.tags || [] };
+      });
+    });
   } catch (e) { /* 首次运行无旧数据 */ }
-  return map;
+  return { notes, byCat };
 }
 
 (async () => {
   console.log('aiscan 工具发现库 · 开始刷新（token=' + (TOKEN ? '已配置' : '未配置') + '，每方向 Top ' + PER_CAT + '）');
-  const notes = loadNotes();
+  const { notes, byCat } = loadPrev();
   const categories = [];
 
   for (const c of CATS) {
@@ -106,15 +110,24 @@ function loadNotes() {
       items.forEach(it => { if (!pool.has(it.full_name)) pool.set(it.full_name, norm(it)); });
       await sleep(2200);
     }
-    const tools = [...pool.values()]
+
+    // 人工解读过的条目优先保留（避免每日刷新把精选项目冲掉），剩余名额由新抓取的高星项目补齐
+    const curated = (byCat[c.id] || []).filter(t => t.summary);
+    const curatedNames = new Set(curated.map(t => t.full_name));
+    const fresh = [...pool.values()]
+      .filter(t => !curatedNames.has(t.full_name))
       .sort((a, b) => b.stars - a.stars)
-      .slice(0, PER_CAT)
-      .map(t => {
-        const n = notes[t.full_name];
-        return Object.assign({}, t, { summary: n ? n.summary : '', tags: n && n.tags ? n.tags : [] });
-      });
+      .slice(0, Math.max(0, PER_CAT - curated.length))
+      .map(t => Object.assign({}, t, { summary: '', tags: t.topics || [] }));
+
+    const tools = curated.concat(fresh).slice(0, PER_CAT).map(t => {
+      const n = notes[t.full_name];
+      const tags = (t.tags && t.tags.length) ? t.tags : (n && n.tags ? n.tags : []);
+      return Object.assign({}, t, { summary: t.summary || (n ? n.summary : ''), tags });
+    });
     categories.push({ id: c.id, name: c.name, color: c.color, queries: c.queries, tools });
-    console.log('  == ' + c.name + '：收录 ' + tools.length + ' 个（候选 ' + pool.size + '）');
+    console.log('  == ' + c.name + '：收录 ' + tools.length + ' 个（精选保留 ' + curated.length
+      + '，新抓取 ' + fresh.length + '，候选 ' + pool.size + '）');
   }
 
   const total = categories.reduce((n, c) => n + c.tools.length, 0);
