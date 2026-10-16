@@ -2,7 +2,7 @@
  "meta": {
   "source": "GitHub Search API",
   "updated_at": "2026-10-16",
-  "total": 70,
+  "total": 72,
   "note": "由 scripts/fetch-tools.js 定时刷新；已收录工具的中文解读在刷新时增量保留"
  },
  "categories": [
@@ -205,7 +205,8 @@
    "color": "#f87171",
    "queries": [
     "red team",
-    "penetration testing"
+    "penetration testing",
+    "pentest agent"
    ],
    "tools": [
     {
@@ -544,6 +545,60 @@
      "tags": [
       "Modbus",
       "攻击框架"
+     ]
+    },
+    {
+     "full_name": "questdb/questdb",
+     "name": "questdb",
+     "owner": "questdb",
+     "url": "https://github.com/questdb/questdb",
+     "stars": 17444,
+     "language": "Java",
+     "pushed_at": "2026-10-16",
+     "desc": "QuestDB is a high performance, open-source, time-series database",
+     "topics": [
+      "apache-arrow",
+      "capital-markets",
+      "database",
+      "historian",
+      "kdb",
+      "low-latency"
+     ],
+     "summary": "",
+     "tags": [
+      "apache-arrow",
+      "capital-markets",
+      "database",
+      "historian",
+      "kdb",
+      "low-latency"
+     ]
+    },
+    {
+     "full_name": "Serial-Studio/Serial-Studio",
+     "name": "Serial-Studio",
+     "owner": "Serial-Studio",
+     "url": "https://github.com/Serial-Studio/Serial-Studio",
+     "stars": 7239,
+     "language": "C",
+     "pushed_at": "2026-10-16",
+     "desc": "Open-source telemetry dashboard. Supports UART, BLE, MQTT, Modbus, CAN Bus and more.",
+     "topics": [
+      "arduino",
+      "canbus",
+      "dashboard",
+      "embedded",
+      "ground-station",
+      "industrial-automation"
+     ],
+     "summary": "",
+     "tags": [
+      "arduino",
+      "canbus",
+      "dashboard",
+      "embedded",
+      "ground-station",
+      "industrial-automation"
      ]
     }
    ]
