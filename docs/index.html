@@ -1,206 +1,553 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>aiscan 巡检面板</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub 生态维护清单 · aiscan 专题</title>
 <style>
+  :root {
+    --bg-1: #0f172a;
+    --bg-2: #155e75;
+    --bg-3: #2563eb;
+    --text-main: #f0f9ff;
+    --text-sub: #cfe8f7;
+    --text-dim: #7dd3fc;
+    --card-bg: rgba(255, 255, 255, 0.045);
+    --card-border: rgba(255, 255, 255, 0.09);
+    --accent: #67e8f9;
+    --accent-2: #38bdf8;
+  }
+
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: -apple-system, 'Segoe UI', Roboto, sans-serif; background: #0f1117; color: #e6edf3; padding: 20px; }
-  .wrap { max-width: 960px; margin: 0 auto; }
-  h1 { font-size: 24px; margin-bottom: 4px; }
-  .sub { color: #8b949e; font-size: 13px; margin-bottom: 20px; }
-  /* 统计卡：固定 5 列等宽，杜绝最后一卡被挤到下一行 */
-  .cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 28px; }
-  @media (max-width: 720px) { .cards { grid-template-columns: repeat(3, 1fr); } }
-  @media (max-width: 480px) { .cards { grid-template-columns: repeat(2, 1fr); } }
-  .card { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 14px 12px; min-width: 0; }
-  .card .num { font-size: 30px; font-weight: 700; line-height: 1.15; }
-  .card .lbl { color: #8b949e; font-size: 12px; margin-top: 4px; }
-  .green { color: #3fb950; } .red { color: #f85149; } .orange { color: #ffa657; } .blue { color: #58a6ff; }
-  .day { background: #161b22; border: 1px solid #30363d; border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
-  .day-head { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-  .day-head:hover { background: #1c2129; }
-  .day-title { font-weight: 600; font-size: 15px; }
-  .day-stats { color: #8b949e; font-size: 13px; }
-  .repos { border-top: 1px solid #21262d; padding: 4px 0; }
-  .repo-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 16px; }
-  .repo-row:hover { background: #1c2129; }
-  .repo-name { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .repo-name a { color: #58a6ff; text-decoration: none; }
-  .repo-score { font-size: 13px; color: #8b949e; white-space: nowrap; }
-  .grade { display: inline-block; width: 24px; height: 24px; line-height: 24px; text-align: center; border-radius: 6px; font-weight: 700; font-size: 13px; margin-left: 8px; }
-  .gA { background: #1b4332; color: #3fb950; } .gB { background: #1f3325; color: #7ee787; }
-  .gC { background: #3d2e00; color: #d29922; } .gD { background: #3d2400; color: #ffa657; }
-  .gF { background: #4a1418; color: #f85149; }
-  .findings { margin-left: auto; margin-right: 12px; font-size: 13px; white-space: nowrap; }
-  details summary { cursor: pointer; list-style: none; }
-  details summary::-webkit-details-marker { display: none; }
-  .detail-table { margin: 2px 16px 10px; border-collapse: collapse; font-size: 12px; }
-  .detail-table td { border-top: 1px solid #21262d; padding: 6px 4px 6px 0; vertical-align: top; }
-  .sev { padding: 1px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-right: 6px; }
-  .s-critical { background: #4a1418; color: #f85149; } .s-high { background: #3d2400; color: #ffa657; }
-  code { background: #21262d; padding: 1px 5px; border-radius: 4px; font-size: 11px; word-break: break-all; }
-  .footer { color: #8b949e; font-size: 12px; text-align: center; margin-top: 30px; }
-  .footer a { color: #58a6ff; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+    background-attachment: fixed;
+    color: var(--text-main);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 56px 24px 40px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .eyebrow {
+    display: inline-block;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(103, 232, 249, 0.35);
+    border-radius: 999px;
+    padding: 6px 16px;
+    margin-bottom: 20px;
+    opacity: 0.85;
+  }
+
+  h1 {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #fff, var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    color: var(--text-sub);
+    font-size: 15px;
+  }
+
+  .meta-line {
+    margin-top: 18px;
+    color: var(--text-dim);
+    font-size: 13px;
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+
+  .meta-line span { display: inline-flex; align-items: center; gap: 6px; }
+
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 48px;
+    margin-bottom: 40px;
+    padding: 22px 0;
+    border-top: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  .stat-item { text-align: center; }
+  .stat-num { font-size: 26px; font-weight: 700; color: var(--accent); }
+  .stat-label { font-size: 12px; color: var(--text-dim); letter-spacing: 1px; margin-top: 4px; }
+
+  .card-list { display: flex; flex-direction: column; gap: 18px; }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 26px 28px;
+    backdrop-filter: blur(8px);
+    transition: border-color 0.25s ease, transform 0.25s ease;
+  }
+
+  .card:hover {
+    border-color: rgba(103, 232, 249, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .rank-badge {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--bg-1);
+    background: var(--accent);
+    border-radius: 6px;
+    padding: 2px 8px;
+    margin-right: 10px;
+    vertical-align: 2px;
+  }
+
+  .repo-name {
+    font-size: 21px;
+    font-weight: 700;
+    color: #f8fafc;
+    text-decoration: none;
+  }
+
+  .repo-name:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+
+  .owner {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-left: 8px;
+    font-weight: 400;
+  }
+
+  .lang-tag {
+    display: inline-block;
+    font-size: 12px;
+    color: #0f172a;
+    border-radius: 999px;
+    padding: 3px 12px;
+    font-weight: 600;
+    margin-left: 10px;
+    vertical-align: 2px;
+  }
+
+  .lang-javascript { background: #f1e05a; }
+  .lang-node { background: #339933; color: #f0f9ff; }
+  .lang-yaml { background: #cb171e; color: #f0f9ff; }
+  .lang-json { background: #d1d5db; color: #0f172a; }
+  .lang-unknown { background: #475569; color: #e2e8f0; }
+
+  .stars {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .star-total {
+    font-size: 17px;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
+  .category-tag {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--accent);
+    background: rgba(103, 232, 249, 0.12);
+    border-radius: 999px;
+    padding: 2px 10px;
+  }
+
+  .desc {
+    margin-top: 14px;
+    font-size: 15px;
+    color: var(--text-sub);
+  }
+
+  .section-title {
+    margin-top: 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.5px;
+  }
+
+  .features {
+    margin-top: 8px;
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .features li {
+    position: relative;
+    padding-left: 18px;
+    font-size: 14px;
+    color: var(--text-main);
+    margin-bottom: 4px;
+  }
+
+  .features li::before {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 9px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-2);
+  }
+
+  .scenarios {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .scenario-tag {
+    font-size: 12px;
+    color: var(--text-sub);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    padding: 3px 12px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  footer {
+    margin-top: 56px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 12.5px;
+    border-top: 1px solid var(--card-border);
+    padding-top: 24px;
+  }
+
+  footer a { color: var(--text-sub); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .container { padding: 32px 16px 32px; }
+    h1 { font-size: 30px; }
+    .stats { gap: 24px; }
+    .card { padding: 20px; }
+    .stars { text-align: left; margin-top: 10px; }
+    .card-top { flex-direction: column; }
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <h1>🛡️ aiscan 巡检面板</h1>
-  <div class="sub">每日自动发现并扫描开源仓库 · 只读审计 · 永不扫描账号自有仓库</div>
-  <div class="cards" id="cards">加载中…</div>
-  <div id="days"></div>
-  <div class="footer">由 <a href="https://github.com/hedongli1/aiscan">aiscan</a> 自动巡检生成 · 数据更新于每日 UTC 03:00</div>
+<div class="container">
+
+  <header>
+    <div class="eyebrow">GitHub · aiscan 运维中心</div>
+    <h1>aiscan 生态维护清单</h1>
+    <p class="subtitle">AI 代码安全审计引擎 · 规则库 / 基准测试 · patrol 定时巡检 · GitHub Action 一键接入</p>
+    <div class="meta-line">
+      <span>数据采集时间：2026-10-16 16:20</span>
+      <span>数据来源：GitHub 生态维护清单（私密） · 运营执行报告（二/三/四）</span>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-num">14+221</div>
+      <div class="stat-label">内置 + 移植检测规则</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">2</div>
+      <div class="stat-label">真实项目接入</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">4</div>
+      <div class="stat-label">自动化 / 接入模式</div>
+    </div>
+  </div>
+
+  <div class="card-list">
+
+    <!-- 1. aiscan 仓库 -->
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <span class="rank-badge">核心</span>
+          <a class="repo-name" href="https://github.com/hedongli1/aiscan" target="_blank">aiscan</a>
+          <span class="owner">hedongli1</span>
+          <span class="lang-tag lang-javascript">JavaScript</span>
+        </div>
+        <div class="stars">
+          <div class="star-total">MIT · v1</div>
+          <div class="category-tag">AI 代码安全审计</div>
+        </div>
+      </div>
+      <p class="desc">一句话简介：零依赖静态分析 + 熵启发式密钥检测 + SARIF 报告 + GitHub Action 一键接入的开源 AI 代码安全审计工具。</p>
+      <div class="section-title">核心能力</div>
+      <ul class="features">
+        <li>14 条内置检测规则：密钥 / AWS / 私钥 / 连接串 / SQL 注入 / 命令注入 / XSS / 弱加密 / 路径穿越 / 关闭 TLS / 日志泄漏 / 供应链</li>
+        <li>AI 熵启发式：香农熵 + 长度 + 字符混合度 → 置信度 0-100，识别无格式高熵密钥</li>
+        <li>四种输出：人类可读 / JSON / SARIF 2.1.0 / HTML 报告</li>
+        <li>自带 GitHub Action（hedongli1/aiscan@v1），自动上传 SARIF 到 Security 标签页</li>
+        <li>支持 .aiscanignore 忽略已复核误报（类似 .gitignore）</li>
+      </ul>
+      <div class="section-title">维护重点</div>
+      <div class="scenarios">
+        <span class="scenario-tag">规则库扩展</span>
+        <span class="scenario-tag">基准测试门禁</span>
+        <span class="scenario-tag">版本号同步</span>
+        <span class="scenario-tag">dogfooding 自检</span>
+        <span class="scenario-tag">社区化（PR / npm）</span>
+      </div>
+    </div>
+
+    <!-- 2. 在线巡检面板 -->
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <span class="rank-badge">在线</span>
+          <a class="repo-name" href="https://hedongli1.github.io/aiscan/" target="_blank">aiscan 巡检面板</a>
+          <span class="owner">GitHub Pages</span>
+          <span class="lang-tag lang-unknown">页面</span>
+        </div>
+        <div class="stars">
+          <div class="star-total">HTTP 200</div>
+          <div class="category-tag">部署产物</div>
+        </div>
+      </div>
+      <p class="desc">一句话简介：部署在 GitHub Pages 的 aiscan 在线巡检面板，展示 patrol 定时巡检历史结果，每月需巡检确认非 404。</p>
+      <div class="section-title">核心能力</div>
+      <ul class="features">
+        <li>页面文件：docs/index.html，push 到 main 分支后由 Pages 自动生效</li>
+        <li>结果数据：docs/history/ 目录（patrol 写入，保留 30 天）</li>
+        <li>巡检节奏：每季度手工刷新一次三个在线 URL 确认可用</li>
+      </ul>
+      <div class="section-title">故障速查</div>
+      <div class="scenarios">
+        <span class="scenario-tag">404 → 查 Actions → Pages 部署日志</span>
+        <span class="scenario-tag">面板无数据 → 手动 Run workflow</span>
+        <span class="scenario-tag">确认 PATROL_TOKEN / GITHUB_TOKEN</span>
+      </div>
+    </div>
+
+    <!-- 3. patrol 定时巡检 -->
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <span class="rank-badge">自动化</span>
+          <span class="repo-name">patrol 定时巡检</span>
+          <span class="owner">aiscan-patrol workflow</span>
+          <span class="lang-tag lang-yaml">YAML</span>
+        </div>
+        <div class="stars">
+          <div class="star-total">Cron UTC 17:00</div>
+          <div class="category-tag">每日 01:00（北京）</div>
+        </div>
+      </div>
+      <p class="desc">一句话简介：每天深夜低峰自动发现真实开源仓库并扫描，结果写入 docs/history/ 供面板展示，保留 30 天。</p>
+      <div class="section-title">核心能力</div>
+      <ul class="features">
+        <li>配置文件：.github/workflows/patrol.yml（cron 0 17 * * *）</li>
+        <li>目标配置：patrol-targets.json（autoDiscover: true + maxPerDay: 5；改固定清单设 autoDiscover false 填 repos）</li>
+        <li>手动触发：仓库 Actions → aiscan-patrol → Run workflow（支持自定义仓库列表临时扫描）</li>
+        <li>错峰安排：与 trending-radar 的 08:30 / 22:14 互不挤占</li>
+      </ul>
+      <div class="section-title">维护注意</div>
+      <div class="scenarios">
+        <span class="scenario-tag">每周确认未失败</span>
+        <span class="scenario-tag">长期未运行检查 Allow 权限</span>
+        <span class="scenario-tag">延迟属正常排队</span>
+      </div>
+    </div>
+
+    <!-- 4. 规则库与基准测试 -->
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <span class="rank-badge">规则</span>
+          <span class="repo-name">规则库 + 基准测试</span>
+          <span class="owner">lib/rules · benchmark</span>
+          <span class="lang-tag lang-json">JSON</span>
+        </div>
+        <div class="stars">
+          <div class="star-total">≥ 0.95 硬门槛</div>
+          <div class="category-tag">precision / recall</div>
+        </div>
+      </div>
+      <p class="desc">一句话简介：内置规则 + 移植 gitleaks 221 条规则，任何新规则必须通过基准测试门禁，否则 CI 挂。</p>
+      <div class="section-title">核心能力</div>
+      <ul class="features">
+        <li>规则库：aiscan/lib/rules/index.js（内置规则）+ aiscan/lib/rules/gitleaks.js（移植 221 条）</li>
+        <li>加规则正确姿势：fixtures/bench/ 加正/反例 → benchmark/manifest.json 登记 → node benchmark/bench.js</li>
+        <li>precision / recall 必须 ≥ 0.95，这是硬门槛，别绕过</li>
+        <li>测试：aiscan/test/scan.test.js，跑 npm test（当前 10/10 通过）</li>
+        <li>自检：node bin/aiscan.js .（dogfooding，当前 0 发现 / 100/A）</li>
+      </ul>
+      <div class="section-title">扩展方向</div>
+      <div class="scenarios">
+        <span class="scenario-tag">Go 规则</span>
+        <span class="scenario-tag">Java 规则</span>
+        <span class="scenario-tag">Dockerfile 规则</span>
+      </div>
+    </div>
+
+    <!-- 5. 真实部署记录 -->
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <span class="rank-badge">实战</span>
+          <span class="repo-name">双项目真实接入</span>
+          <span class="owner">ledger-app · purple-team-lab</span>
+          <span class="lang-tag lang-node">Node</span>
+        </div>
+        <div class="stars">
+          <div class="star-total">aiscan-security ✅</div>
+          <div class="category-tag">每日 2 点定时扫描</div>
+        </div>
+      </div>
+      <p class="desc">一句话简介：aiscan@v1 已真实接入两个仓库并形成"发现问题组 vs 干净基线"对照，SARIF 全部上传 Security 标签页。</p>
+      <div class="section-title">核心能力</div>
+      <ul class="features">
+        <li>ledger-app：检出 SQL 拼接风险信号 → 人工复核 → 修复转绿（"发现问题"组）</li>
+        <li>purple-team-lab：0 发现 / 评分 100/A（"干净基线"对照）</li>
+        <li>接入方式：.github/workflows/aiscan-security.yml 一行 uses: hedongli1/aiscan@v1</li>
+        <li>参数：path: server/src · severity: low · fail-on: high（真实拦截门禁）</li>
+        <li>实弹修复：.aiscanignore 从仓库根读取、::set-output 迁移 $GITHUB_ENV</li>
+      </ul>
+      <div class="section-title">接入场景</div>
+      <div class="scenarios">
+        <span class="scenario-tag">push / PR 审查</span>
+        <span class="scenario-tag">每日定时安全扫描</span>
+        <span class="scenario-tag">SARIF 上报 Security</span>
+      </div>
+    </div>
+
+    <!-- 6. 维护要点 -->
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <span class="rank-badge">要点</span>
+          <span class="repo-name">维护操作速查</span>
+          <span class="owner">二次开发重点</span>
+          <span class="lang-tag lang-unknown">操作</span>
+        </div>
+        <div class="stars">
+          <div class="star-total">每月 15 分钟</div>
+          <div class="category-tag">例行维护</div>
+        </div>
+      </div>
+      <p class="desc">一句话简介：围绕 aiscan 的例行维护节奏与操作入口，每周 / 每月 / 每季度三档巡检。</p>
+      <div class="section-title">核心能力</div>
+      <ul class="features">
+        <li>每周：Actions 页扫一眼 patrol 是否正常运行、有无失败</li>
+        <li>每月：有新规则需求按规则库流程加，跑基准 ≥ 0.95；检查 7 仓库 Security 告警</li>
+        <li>每季度：轮换 GitHub token（2FA 倒计时后强制）、git fetch 确认无漂移</li>
+        <li>版本号在 bin/aiscan.js 与 package.json，新功能记得升版本</li>
+        <li>新功能或修 bug 后执行 dogfooding + npm test 全绿再 push</li>
+      </ul>
+      <div class="section-title">重要提醒</div>
+      <div class="scenarios">
+        <span class="scenario-tag">token 到期轮换</span>
+        <span class="scenario-tag">Search API 30/min 认证限流</span>
+        <span class="scenario-tag">token 严禁入库</span>
+      </div>
+    </div>
+
+    <!-- 7. 故障排查 -->
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <span class="rank-badge">排查</span>
+          <span class="repo-name">常见故障速查</span>
+          <span class="owner">症状 → 原因 → 处理</span>
+          <span class="lang-tag lang-unknown">诊断</span>
+        </div>
+        <div class="stars">
+          <div class="star-total">6 类高频问题</div>
+          <div class="category-tag">速查表</div>
+        </div>
+      </div>
+      <p class="desc">一句话简介：aiscan 生态常见故障的根因与处置速查，覆盖 workflow、面板、认证、限流四类问题。</p>
+      <div class="section-title">核心能力</div>
+      <ul class="features">
+        <li>面板无数据 → docs/history/ 为空 → 手动 Run workflow；确认 PATROL_TOKEN / GITHUB_TOKEN Secret 存在</li>
+        <li>workflow 红 → 依赖版本 / 权限 / 语法 → 点进 run 看 step 日志，cron 任务可手动 rerun</li>
+        <li>长期未运行 → Settings → Actions → General → Allow 权限被关</li>
+        <li>push 401/403 → token 失效或 2FA 强制 → 重新生成 token 更新清单与本地凭据</li>
+        <li>徽章 404 badge not found → shields 动态类型名写错（dynamic/json 非 dynamic/users）</li>
+        <li>Search API 限流 → 认证后 30/min，当前每日约 8 次调用余量充足</li>
+      </ul>
+      <div class="section-title">定位路径</div>
+      <div class="scenarios">
+        <span class="scenario-tag">Actions 页</span>
+        <span class="scenario-tag">Settings → Secrets</span>
+        <span class="scenario-tag">docs/history/</span>
+      </div>
+    </div>
+
+    <!-- 8. 部署与接入 -->
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <span class="rank-badge">部署</span>
+          <span class="repo-name">部署与使用方式</span>
+          <span class="owner">三种接入模式</span>
+          <span class="lang-tag lang-yaml">Action</span>
+        </div>
+        <div class="stars">
+          <div class="star-total">一键接入</div>
+          <div class="category-tag">deploy / use</div>
+        </div>
+      </div>
+      <p class="desc">一句话简介：aiscan 的三种使用入口——在线面板、GitHub Action、本地 CLI，覆盖查看、门禁、自检三类诉求。</p>
+      <div class="section-title">核心能力</div>
+      <ul class="features">
+        <li>在线面板：https://hedongli1.github.io/aiscan/（Pages 自动部署，push docs/ 即生效）</li>
+        <li>Action 接入：仓库加 .github/workflows/aiscan-security.yml，uses: hedongli1/aiscan@v1</li>
+        <li>本地 CLI：node bin/aiscan.js &lt;path&gt;（dogfooding 自检）；node benchmark/bench.js（基准）</li>
+        <li>版本策略：v1 tag 跟随最新修复 commit，用 @v1 保持自动跟随</li>
+        <li>计划：npm publish 后可用 npx aiscan（当前需 clone）</li>
+      </ul>
+      <div class="section-title">使用场景</div>
+      <div class="scenarios">
+        <span class="scenario-tag">CI 安全门禁</span>
+        <span class="scenario-tag">上线前扫描</span>
+        <span class="scenario-tag">密钥泄漏排查</span>
+        <span class="scenario-tag">开源社区接入</span>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>数据来源：<a href="https://github.com/hedongli1/aiscan" target="_blank">GitHub 生态维护清单（私密文档）</a> · 运营执行报告二/三/四（aiscan 启动部署 / 实弹接入 / 双项目收官） · 采集时间 2026-10-16 16:20</p>
+    <p style="margin-top:6px;">说明：页面覆盖 aiscan 仓库、在线巡检面板、patrol 定时巡检、规则库与基准测试、真实部署记录、维护要点、故障排查与部署接入 8 个维度。</p>
+    <p style="margin-top:6px;">仅供信息参考，数据以 GitHub 仓库与 Actions 实时状态为准</p>
+  </footer>
+
 </div>
-<script>
-(async () => {
-  // 最近 30 天的 JSON 逐个尝试加载（Pages 上无目录列表 API）
-  const files = [];
-  const today = new Date();
-  for (let i = 0; i < 30; i++) {
-    const d = new Date(today.getTime() - i * 86400000);
-    const name = d.toISOString().slice(0, 10);
-    files.push(name + '.json');
-  }
-  const results = await Promise.all(files.map(async (f) => {
-    try {
-const r = await fetch('history/' + f);
-      if (!r.ok) return null;
-      return await r.json();
-    } catch { return null; }
-  }));
-  const days = results.filter(Boolean);
-  if (!days.length) {
-    document.getElementById('cards').textContent = '暂无巡检数据（等待首次运行）';
-    return;
-  }
-  // 汇总卡片
-  let totalScanned = 0, totalFlagged = 0, totalFindings = 0, totalCrit = 0, totalHigh = 0;
-  for (const d of days) {
-    totalScanned += d.report.scanned || 0;
-    totalFlagged += (d.report.flaggedRepos || []).length;
-    for (const f of d.report.flaggedRepos || []) {
-      totalFindings += f.findings || 0;
-      totalCrit += (f.summary?.counts?.critical) || 0;
-      totalHigh += (f.summary?.counts?.high) || 0;
-    }
-  }
-  // 汇总卡片（DOM API 构建，不使用 innerHTML —— 消除 DOM XSS 面）
-  const cardsEl = document.getElementById('cards');
-  const cardData = [
-    ['blue', days.length, '巡检天数'],
-    ['', totalScanned, '累计扫描仓库'],
-    ['orange', totalFlagged, '告警仓库'],
-    ['red', totalCrit, 'Critical 发现'],
-    ['red', totalHigh, 'High 发现'],
-  ];
-  for (const [color, num, label] of cardData) {
-    const card = document.createElement('div');
-    card.className = 'card';
-    const n = document.createElement('div');
-    n.className = 'num ' + color;
-    n.textContent = num;
-    const l = document.createElement('div');
-    l.className = 'lbl';
-    l.textContent = label;
-    card.append(n, l);
-    cardsEl.appendChild(card);
-  }
-
-  // 时间线（DOM API 构建）
-  const container = document.getElementById('days');
-  for (const d of days) {
-    const flagged = d.report.flaggedRepos || [];
-    const clean = (d.report.scanned || 0) - flagged.length;
-    const dayEl = document.createElement('div');
-    dayEl.className = 'day';
-    const det = document.createElement('details');
-    det.open = true;
-    const sum = document.createElement('summary');
-    sum.className = 'day-head';
-    const t = document.createElement('span');
-    t.className = 'day-title';
-    t.textContent = '📅 ' + d.date;
-    const st = document.createElement('span');
-    st.className = 'day-stats';
-    st.textContent = `扫描 ${d.report.scanned || 0} · 告警 ${flagged.length} · 干净 ${clean}`;
-    sum.append(t, st);
-
-    const repos = document.createElement('div');
-    repos.className = 'repos';
-    if (flagged.length === 0) {
-      const row = document.createElement('div');
-      row.className = 'repo-row';
-      const name = document.createElement('span');
-      name.className = 'repo-name green';
-      name.textContent = '✅ 全部干净';
-      row.appendChild(name);
-      repos.appendChild(row);
-    }
-    for (const f of flagged) {
-      const g = f.summary?.grade || '?';
-      const rep = document.createElement('details');
-      rep.className = 'repo-row';
-      rep.style.display = 'block';
-      const s2 = document.createElement('summary');
-      s2.className = 'repo-row';
-      s2.style.display = 'flex';
-      const nm = document.createElement('span');
-      nm.className = 'repo-name';
-      const a = document.createElement('a');
-      a.href = `https://github.com/${f.repo}`;
-      a.target = '_blank';
-      a.textContent = '🚨 ' + f.repo;
-      nm.appendChild(a);
-      const cnt = document.createElement('span');
-      cnt.className = 'findings';
-      cnt.textContent = `${f.findings} 告警`;
-      const sc = document.createElement('span');
-      sc.className = 'repo-score';
-      const ga = document.createElement('span');
-      ga.className = 'grade g' + g;
-      ga.textContent = g;
-      sc.textContent = `评分 ${f.summary?.securityScore ?? '?'} `;
-      sc.appendChild(ga);
-      s2.append(nm, cnt, sc);
-
-      const tb = document.createElement('table');
-      tb.className = 'detail-table';
-      const body = document.createElement('tbody');
-      for (const x of (f.detail || []).slice(0, 8)) {
-        const tr = document.createElement('tr');
-        const d1 = document.createElement('td');
-        const sev = document.createElement('span');
-        sev.className = 'sev s-' + x.severity;
-        sev.textContent = (x.severity || '').toUpperCase();
-        d1.append(sev, document.createTextNode(x.ruleId || ''));
-        const d2 = document.createElement('td');
-        d2.appendChild(document.createTextNode(`${x.file}:${x.line}`));
-        const d3 = document.createElement('td');
-        d3.style.color = '#8b949e';
-        d3.textContent = (x.snippet || '').slice(0, 60);
-        tr.append(d1, d2, d3);
-        body.appendChild(tr);
-      }
-      if ((f.detail || []).length > 8) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = 3;
-        td.style.color = '#8b949e';
-        td.textContent = '…共 ' + f.detail.length + ' 项';
-        tr.appendChild(td);
-        body.appendChild(tr);
-      }
-      tb.appendChild(body);
-      rep.append(s2, tb);
-      repos.appendChild(rep);
-    }
-    det.append(sum, repos);
-    dayEl.appendChild(det);
-    container.appendChild(dayEl);
-  }
-})();
-</script>
 </body>
 </html>
