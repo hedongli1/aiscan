@@ -10,7 +10,7 @@ on:
       per_cat:
         description: "每个方向收录数量"
         required: false
-        default: "12"
+        default: "40"
 
 permissions:
   contents: write
@@ -34,7 +34,7 @@ jobs:
       - name: 刷新工具数据
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PER_CAT: ${{ github.event.inputs.per_cat || '12' }}
+          PER_CAT: ${{ github.event.inputs.per_cat || '40' }}
         run: node scripts/fetch-tools.js
 
       - name: 提交数据变更
