@@ -3,551 +3,324 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GitHub 生态维护清单 · aiscan 专题</title>
+<title>GitHub 安全工具发现库 · aiscan</title>
 <style>
-  :root {
-    --bg-1: #0f172a;
-    --bg-2: #155e75;
-    --bg-3: #2563eb;
-    --text-main: #f0f9ff;
-    --text-sub: #cfe8f7;
-    --text-dim: #7dd3fc;
-    --card-bg: rgba(255, 255, 255, 0.045);
-    --card-border: rgba(255, 255, 255, 0.09);
-    --accent: #67e8f9;
-    --accent-2: #38bdf8;
+  :root{
+    --bg:#080c18; --panel:rgba(255,255,255,.045); --line:rgba(255,255,255,.10);
+    --txt:#eef2f7; --sub:#9db0ca; --dim:#6b7f9c; --gold:#fbbf24;
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    background: linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
-    background-attachment: fixed;
-    color: var(--text-main);
-    min-height: 100vh;
-    line-height: 1.6;
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--txt);line-height:1.6;min-height:100vh;
+    background:
+      radial-gradient(1100px 520px at 12% -8%, rgba(56,189,248,.16), transparent 60%),
+      radial-gradient(900px 480px at 92% 4%, rgba(139,92,246,.14), transparent 62%),
+      linear-gradient(175deg,#080c18 0%,#0b1224 55%,#0a0f1e 100%);
+    background-attachment:fixed;
   }
+  .wrap{max-width:1180px;margin:0 auto;padding:48px 22px 64px}
 
-  .container {
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 56px 24px 40px;
+  /* ---------- header ---------- */
+  header{text-align:center;margin-bottom:34px}
+  .eyebrow{
+    display:inline-block;font-size:12px;letter-spacing:3px;color:#67e8f9;
+    border:1px solid rgba(103,232,249,.32);border-radius:999px;padding:5px 15px;margin-bottom:16px
   }
-
-  header {
-    text-align: center;
-    margin-bottom: 48px;
+  h1{
+    font-size:36px;font-weight:700;letter-spacing:-.5px;
+    background:linear-gradient(92deg,#fff,#7dd3fc 45%,#a78bfa);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent
   }
+  .sub{color:var(--sub);font-size:14px;margin-top:10px}
+  .meta{margin-top:16px;display:flex;justify-content:center;gap:22px;flex-wrap:wrap;font-size:12.5px;color:var(--dim)}
+  .meta b{color:#7dd3fc;font-weight:600}
 
-  .eyebrow {
-    display: inline-block;
-    font-size: 13px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--accent);
-    border: 1px solid rgba(103, 232, 249, 0.35);
-    border-radius: 999px;
-    padding: 6px 16px;
-    margin-bottom: 20px;
-    opacity: 0.85;
+  /* ---------- toolbar ---------- */
+  .toolbar{
+    position:sticky;top:0;z-index:20;display:flex;gap:10px;flex-wrap:wrap;align-items:center;
+    padding:14px;margin:0 0 26px;border:1px solid var(--line);border-radius:14px;
+    background:rgba(10,15,30,.82);backdrop-filter:blur(14px)
   }
-
-  h1 {
-    font-size: 40px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    background: linear-gradient(90deg, #fff, var(--accent));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 12px;
+  input[type=search],select{
+    background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--txt);
+    border-radius:10px;padding:9px 13px;font-size:13.5px;outline:none;font-family:inherit
   }
-
-  .subtitle {
-    color: var(--text-sub);
-    font-size: 15px;
+  input[type=search]{flex:1 1 260px;min-width:200px}
+  input[type=search]:focus,select:focus{border-color:rgba(103,232,249,.55)}
+  select{cursor:pointer}
+  select option{background:#0d1426;color:var(--txt)}
+  .chips{display:flex;gap:7px;flex-wrap:wrap;width:100%}
+  .chip{
+    font-size:12.5px;padding:5px 12px;border-radius:999px;cursor:pointer;user-select:none;
+    border:1px solid var(--line);color:var(--sub);background:transparent;transition:.18s
   }
-
-  .meta-line {
-    margin-top: 18px;
-    color: var(--text-dim);
-    font-size: 13px;
-    display: flex;
-    justify-content: center;
-    gap: 28px;
-    flex-wrap: wrap;
+  .chip:hover{color:var(--txt)}
+  .chip.on{color:#08111f;font-weight:700;border-color:transparent}
+  .btn{
+    font-size:12.5px;padding:7px 14px;border-radius:10px;cursor:pointer;font-family:inherit;
+    border:1px solid var(--line);background:transparent;color:var(--sub)
   }
+  .btn:hover{color:var(--txt);border-color:rgba(255,255,255,.28)}
 
-  .meta-line span { display: inline-flex; align-items: center; gap: 6px; }
+  /* ---------- board ---------- */
+  .cat{margin-bottom:38px}
+  .cat-head{display:flex;align-items:center;gap:11px;margin-bottom:15px;flex-wrap:wrap}
+  .cat-bar{width:4px;height:22px;border-radius:3px;background:var(--c)}
+  .cat-head h2{font-size:19px;font-weight:700;color:#f8fafc}
+  .cat-count{font-size:12px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:1px 10px}
+  .cat-queries{font-size:11.5px;color:var(--dim);width:100%;margin-top:-6px}
 
-  .stats {
-    display: flex;
-    justify-content: center;
-    gap: 48px;
-    margin-bottom: 40px;
-    padding: 22px 0;
-    border-top: 1px solid var(--card-border);
-    border-bottom: 1px solid var(--card-border);
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:13px}
+  .tool{
+    background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--c);
+    border-radius:12px;padding:15px 16px;transition:.2s;display:flex;flex-direction:column;gap:8px
   }
+  .tool:hover{transform:translateY(-2px);background:rgba(255,255,255,.07);box-shadow:0 10px 26px rgba(0,0,0,.3)}
+  .tool-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .tool a.name{font-size:15.5px;font-weight:700;color:#f8fafc;text-decoration:none;word-break:break-all}
+  .tool a.name:hover{color:var(--c);text-decoration:underline;text-underline-offset:3px}
+  .owner{color:var(--dim);font-weight:400;font-size:13px}
+  .stars{flex-shrink:0;font-size:13px;font-weight:700;color:var(--gold);white-space:nowrap}
+  .sum{font-size:13px;color:#cfdcec}
+  .desc{font-size:12px;color:var(--dim);font-style:italic}
+  .tool-foot{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:auto}
+  .lang{font-size:11.5px;color:var(--sub);display:inline-flex;align-items:center;gap:5px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#64748b;display:inline-block}
+  .upd{font-size:11.5px;color:var(--dim)}
+  .tag{font-size:11px;padding:2px 9px;border-radius:999px;color:var(--c);border:1px solid currentColor;opacity:.9}
 
-  .stat-item { text-align: center; }
-  .stat-num { font-size: 26px; font-weight: 700; color: var(--accent); }
-  .stat-label { font-size: 12px; color: var(--text-dim); letter-spacing: 1px; margin-top: 4px; }
+  .empty{text-align:center;color:var(--dim);padding:52px 0;font-size:14px;border:1px dashed var(--line);border-radius:14px}
 
-  .card-list { display: flex; flex-direction: column; gap: 18px; }
+  /* ---------- patrol ---------- */
+  .patrol{margin-top:52px;border:1px solid var(--line);border-radius:16px;padding:22px;background:rgba(255,255,255,.028)}
+  .patrol h2{font-size:17px;font-weight:700;color:#f8fafc;display:flex;align-items:center;gap:9px}
+  .patrol h2 .pbar{width:4px;height:20px;border-radius:3px;background:#10b981}
+  .patrol .hint{font-size:12px;color:var(--dim);margin:8px 0 16px}
+  .pstats{display:flex;gap:30px;flex-wrap:wrap;margin-bottom:16px}
+  .pstat{text-align:center;min-width:74px}
+  .pstat .n{font-size:22px;font-weight:700;color:#34d399}
+  .pstat .l{font-size:11.5px;color:var(--dim);margin-top:2px}
+  .trend{display:flex;align-items:flex-end;gap:4px;height:52px;margin:10px 0 6px}
+  .trend i{flex:1;min-width:5px;border-radius:2px 2px 0 0;background:linear-gradient(180deg,#34d399,#0f766e);display:block}
+  .prow{font-size:12.5px;color:var(--sub);padding:6px 0;border-top:1px solid var(--line);display:flex;gap:10px;flex-wrap:wrap}
+  .prow b{color:#fca5a5;font-weight:600}
+  .plink{font-size:12px;color:#7dd3fc;text-decoration:none}
+  .plink:hover{text-decoration:underline}
 
-  .card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 16px;
-    padding: 26px 28px;
-    backdrop-filter: blur(8px);
-    transition: border-color 0.25s ease, transform 0.25s ease;
-  }
-
-  .card:hover {
-    border-color: rgba(103, 232, 249, 0.4);
-    transform: translateY(-2px);
-  }
-
-  .card-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .rank-badge {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--bg-1);
-    background: var(--accent);
-    border-radius: 6px;
-    padding: 2px 8px;
-    margin-right: 10px;
-    vertical-align: 2px;
-  }
-
-  .repo-name {
-    font-size: 21px;
-    font-weight: 700;
-    color: #f8fafc;
-    text-decoration: none;
-  }
-
-  .repo-name:hover { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
-
-  .owner {
-    color: var(--text-dim);
-    font-size: 13px;
-    margin-left: 8px;
-    font-weight: 400;
-  }
-
-  .lang-tag {
-    display: inline-block;
-    font-size: 12px;
-    color: #0f172a;
-    border-radius: 999px;
-    padding: 3px 12px;
-    font-weight: 600;
-    margin-left: 10px;
-    vertical-align: 2px;
-  }
-
-  .lang-javascript { background: #f1e05a; }
-  .lang-node { background: #339933; color: #f0f9ff; }
-  .lang-yaml { background: #cb171e; color: #f0f9ff; }
-  .lang-json { background: #d1d5db; color: #0f172a; }
-  .lang-unknown { background: #475569; color: #e2e8f0; }
-
-  .stars {
-    text-align: right;
-    flex-shrink: 0;
-  }
-
-  .star-total {
-    font-size: 17px;
-    font-weight: 700;
-    color: #f8fafc;
-  }
-
-  .category-tag {
-    display: inline-block;
-    margin-top: 4px;
-    font-size: 12px;
-    color: var(--accent);
-    background: rgba(103, 232, 249, 0.12);
-    border-radius: 999px;
-    padding: 2px 10px;
-  }
-
-  .desc {
-    margin-top: 14px;
-    font-size: 15px;
-    color: var(--text-sub);
-  }
-
-  .section-title {
-    margin-top: 18px;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: 0.5px;
-  }
-
-  .features {
-    margin-top: 8px;
-    padding-left: 0;
-    list-style: none;
-  }
-
-  .features li {
-    position: relative;
-    padding-left: 18px;
-    font-size: 14px;
-    color: var(--text-main);
-    margin-bottom: 4px;
-  }
-
-  .features li::before {
-    content: "";
-    position: absolute;
-    left: 2px;
-    top: 9px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent-2);
-  }
-
-  .scenarios {
-    margin-top: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .scenario-tag {
-    font-size: 12px;
-    color: var(--text-sub);
-    border: 1px solid var(--card-border);
-    border-radius: 999px;
-    padding: 3px 12px;
-    background: rgba(255, 255, 255, 0.03);
-  }
-
-  footer {
-    margin-top: 56px;
-    text-align: center;
-    color: var(--text-dim);
-    font-size: 12.5px;
-    border-top: 1px solid var(--card-border);
-    padding-top: 24px;
-  }
-
-  footer a { color: var(--text-sub); text-decoration: none; }
-  footer a:hover { color: var(--accent); }
-
-  @media (max-width: 640px) {
-    .container { padding: 32px 16px 32px; }
-    h1 { font-size: 30px; }
-    .stats { gap: 24px; }
-    .card { padding: 20px; }
-    .stars { text-align: left; margin-top: 10px; }
-    .card-top { flex-direction: column; }
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--dim);text-align:center;line-height:2}
+  footer a{color:#7dd3fc;text-decoration:none}
+  @media(max-width:640px){
+    .wrap{padding:30px 14px 48px}
+    h1{font-size:27px}
+    .grid{grid-template-columns:1fr}
   }
 </style>
 </head>
 <body>
-<div class="container">
+<div class="wrap">
 
   <header>
-    <div class="eyebrow">GitHub · aiscan 运维中心</div>
-    <h1>aiscan 生态维护清单</h1>
-    <p class="subtitle">AI 代码安全审计引擎 · 规则库 / 基准测试 · patrol 定时巡检 · GitHub Action 一键接入</p>
-    <div class="meta-line">
-      <span>数据采集时间：2026-10-16 16:20</span>
-      <span>数据来源：GitHub 生态维护清单（私密） · 运营执行报告（二/三/四）</span>
+    <div class="eyebrow">GITHUB TOOL RADAR</div>
+    <h1>安全工具发现库</h1>
+    <p class="sub">按方向检索 GitHub 上的开源安全工具 · 数据由 GitHub Actions 定时自动刷新</p>
+    <div class="meta">
+      <span>数据更新 <b id="m-updated">—</b></span>
+      <span>收录 <b id="m-total">—</b></span>
+      <span>方向 <b id="m-cats">—</b></span>
+      <span>数据源 <b>GitHub Search API</b></span>
     </div>
   </header>
 
-  <div class="stats">
-    <div class="stat-item">
-      <div class="stat-num">14+221</div>
-      <div class="stat-label">内置 + 移植检测规则</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">2</div>
-      <div class="stat-label">真实项目接入</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">4</div>
-      <div class="stat-label">自动化 / 接入模式</div>
-    </div>
-  </div>
+  <section class="toolbar">
+    <input id="q" type="search" placeholder="搜索工具名 / 描述 / 标签（中英文均可）…">
+    <select id="sort">
+      <option value="stars">按 Star 降序</option>
+      <option value="updated">按最近更新</option>
+      <option value="name">按名称 A→Z</option>
+    </select>
+    <select id="lang"><option value="">全部语言</option></select>
+    <button class="btn" id="reset">重置筛选</button>
+    <div class="chips" id="cats"></div>
+  </section>
 
-  <div class="card-list">
+  <main id="board"></main>
+  <div class="empty" id="empty" hidden>没有匹配的工具，换个关键词或清空筛选试试</div>
 
-    <!-- 1. aiscan 仓库 -->
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <span class="rank-badge">核心</span>
-          <a class="repo-name" href="https://github.com/hedongli1/aiscan" target="_blank">aiscan</a>
-          <span class="owner">hedongli1</span>
-          <span class="lang-tag lang-javascript">JavaScript</span>
-        </div>
-        <div class="stars">
-          <div class="star-total">MIT · v1</div>
-          <div class="category-tag">AI 代码安全审计</div>
-        </div>
-      </div>
-      <p class="desc">一句话简介：零依赖静态分析 + 熵启发式密钥检测 + SARIF 报告 + GitHub Action 一键接入的开源 AI 代码安全审计工具。</p>
-      <div class="section-title">核心能力</div>
-      <ul class="features">
-        <li>14 条内置检测规则：密钥 / AWS / 私钥 / 连接串 / SQL 注入 / 命令注入 / XSS / 弱加密 / 路径穿越 / 关闭 TLS / 日志泄漏 / 供应链</li>
-        <li>AI 熵启发式：香农熵 + 长度 + 字符混合度 → 置信度 0-100，识别无格式高熵密钥</li>
-        <li>四种输出：人类可读 / JSON / SARIF 2.1.0 / HTML 报告</li>
-        <li>自带 GitHub Action（hedongli1/aiscan@v1），自动上传 SARIF 到 Security 标签页</li>
-        <li>支持 .aiscanignore 忽略已复核误报（类似 .gitignore）</li>
-      </ul>
-      <div class="section-title">维护重点</div>
-      <div class="scenarios">
-        <span class="scenario-tag">规则库扩展</span>
-        <span class="scenario-tag">基准测试门禁</span>
-        <span class="scenario-tag">版本号同步</span>
-        <span class="scenario-tag">dogfooding 自检</span>
-        <span class="scenario-tag">社区化（PR / npm）</span>
-      </div>
-    </div>
-
-    <!-- 2. 在线巡检面板 -->
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <span class="rank-badge">在线</span>
-          <a class="repo-name" href="https://hedongli1.github.io/aiscan/" target="_blank">aiscan 巡检面板</a>
-          <span class="owner">GitHub Pages</span>
-          <span class="lang-tag lang-unknown">页面</span>
-        </div>
-        <div class="stars">
-          <div class="star-total">HTTP 200</div>
-          <div class="category-tag">部署产物</div>
-        </div>
-      </div>
-      <p class="desc">一句话简介：部署在 GitHub Pages 的 aiscan 在线巡检面板，展示 patrol 定时巡检历史结果，每月需巡检确认非 404。</p>
-      <div class="section-title">核心能力</div>
-      <ul class="features">
-        <li>页面文件：docs/index.html，push 到 main 分支后由 Pages 自动生效</li>
-        <li>结果数据：docs/history/ 目录（patrol 写入，保留 30 天）</li>
-        <li>巡检节奏：每季度手工刷新一次三个在线 URL 确认可用</li>
-      </ul>
-      <div class="section-title">故障速查</div>
-      <div class="scenarios">
-        <span class="scenario-tag">404 → 查 Actions → Pages 部署日志</span>
-        <span class="scenario-tag">面板无数据 → 手动 Run workflow</span>
-        <span class="scenario-tag">确认 PATROL_TOKEN / GITHUB_TOKEN</span>
-      </div>
-    </div>
-
-    <!-- 3. patrol 定时巡检 -->
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <span class="rank-badge">自动化</span>
-          <span class="repo-name">patrol 定时巡检</span>
-          <span class="owner">aiscan-patrol workflow</span>
-          <span class="lang-tag lang-yaml">YAML</span>
-        </div>
-        <div class="stars">
-          <div class="star-total">Cron UTC 17:00</div>
-          <div class="category-tag">每日 01:00（北京）</div>
-        </div>
-      </div>
-      <p class="desc">一句话简介：每天深夜低峰自动发现真实开源仓库并扫描，结果写入 docs/history/ 供面板展示，保留 30 天。</p>
-      <div class="section-title">核心能力</div>
-      <ul class="features">
-        <li>配置文件：.github/workflows/patrol.yml（cron 0 17 * * *）</li>
-        <li>目标配置：patrol-targets.json（autoDiscover: true + maxPerDay: 5；改固定清单设 autoDiscover false 填 repos）</li>
-        <li>手动触发：仓库 Actions → aiscan-patrol → Run workflow（支持自定义仓库列表临时扫描）</li>
-        <li>错峰安排：与 trending-radar 的 08:30 / 22:14 互不挤占</li>
-      </ul>
-      <div class="section-title">维护注意</div>
-      <div class="scenarios">
-        <span class="scenario-tag">每周确认未失败</span>
-        <span class="scenario-tag">长期未运行检查 Allow 权限</span>
-        <span class="scenario-tag">延迟属正常排队</span>
-      </div>
-    </div>
-
-    <!-- 4. 规则库与基准测试 -->
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <span class="rank-badge">规则</span>
-          <span class="repo-name">规则库 + 基准测试</span>
-          <span class="owner">lib/rules · benchmark</span>
-          <span class="lang-tag lang-json">JSON</span>
-        </div>
-        <div class="stars">
-          <div class="star-total">≥ 0.95 硬门槛</div>
-          <div class="category-tag">precision / recall</div>
-        </div>
-      </div>
-      <p class="desc">一句话简介：内置规则 + 移植 gitleaks 221 条规则，任何新规则必须通过基准测试门禁，否则 CI 挂。</p>
-      <div class="section-title">核心能力</div>
-      <ul class="features">
-        <li>规则库：aiscan/lib/rules/index.js（内置规则）+ aiscan/lib/rules/gitleaks.js（移植 221 条）</li>
-        <li>加规则正确姿势：fixtures/bench/ 加正/反例 → benchmark/manifest.json 登记 → node benchmark/bench.js</li>
-        <li>precision / recall 必须 ≥ 0.95，这是硬门槛，别绕过</li>
-        <li>测试：aiscan/test/scan.test.js，跑 npm test（当前 10/10 通过）</li>
-        <li>自检：node bin/aiscan.js .（dogfooding，当前 0 发现 / 100/A）</li>
-      </ul>
-      <div class="section-title">扩展方向</div>
-      <div class="scenarios">
-        <span class="scenario-tag">Go 规则</span>
-        <span class="scenario-tag">Java 规则</span>
-        <span class="scenario-tag">Dockerfile 规则</span>
-      </div>
-    </div>
-
-    <!-- 5. 真实部署记录 -->
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <span class="rank-badge">实战</span>
-          <span class="repo-name">双项目真实接入</span>
-          <span class="owner">ledger-app · purple-team-lab</span>
-          <span class="lang-tag lang-node">Node</span>
-        </div>
-        <div class="stars">
-          <div class="star-total">aiscan-security ✅</div>
-          <div class="category-tag">每日 2 点定时扫描</div>
-        </div>
-      </div>
-      <p class="desc">一句话简介：aiscan@v1 已真实接入两个仓库并形成"发现问题组 vs 干净基线"对照，SARIF 全部上传 Security 标签页。</p>
-      <div class="section-title">核心能力</div>
-      <ul class="features">
-        <li>ledger-app：检出 SQL 拼接风险信号 → 人工复核 → 修复转绿（"发现问题"组）</li>
-        <li>purple-team-lab：0 发现 / 评分 100/A（"干净基线"对照）</li>
-        <li>接入方式：.github/workflows/aiscan-security.yml 一行 uses: hedongli1/aiscan@v1</li>
-        <li>参数：path: server/src · severity: low · fail-on: high（真实拦截门禁）</li>
-        <li>实弹修复：.aiscanignore 从仓库根读取、::set-output 迁移 $GITHUB_ENV</li>
-      </ul>
-      <div class="section-title">接入场景</div>
-      <div class="scenarios">
-        <span class="scenario-tag">push / PR 审查</span>
-        <span class="scenario-tag">每日定时安全扫描</span>
-        <span class="scenario-tag">SARIF 上报 Security</span>
-      </div>
-    </div>
-
-    <!-- 6. 维护要点 -->
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <span class="rank-badge">要点</span>
-          <span class="repo-name">维护操作速查</span>
-          <span class="owner">二次开发重点</span>
-          <span class="lang-tag lang-unknown">操作</span>
-        </div>
-        <div class="stars">
-          <div class="star-total">每月 15 分钟</div>
-          <div class="category-tag">例行维护</div>
-        </div>
-      </div>
-      <p class="desc">一句话简介：围绕 aiscan 的例行维护节奏与操作入口，每周 / 每月 / 每季度三档巡检。</p>
-      <div class="section-title">核心能力</div>
-      <ul class="features">
-        <li>每周：Actions 页扫一眼 patrol 是否正常运行、有无失败</li>
-        <li>每月：有新规则需求按规则库流程加，跑基准 ≥ 0.95；检查 7 仓库 Security 告警</li>
-        <li>每季度：轮换 GitHub token（2FA 倒计时后强制）、git fetch 确认无漂移</li>
-        <li>版本号在 bin/aiscan.js 与 package.json，新功能记得升版本</li>
-        <li>新功能或修 bug 后执行 dogfooding + npm test 全绿再 push</li>
-      </ul>
-      <div class="section-title">重要提醒</div>
-      <div class="scenarios">
-        <span class="scenario-tag">token 到期轮换</span>
-        <span class="scenario-tag">Search API 30/min 认证限流</span>
-        <span class="scenario-tag">token 严禁入库</span>
-      </div>
-    </div>
-
-    <!-- 7. 故障排查 -->
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <span class="rank-badge">排查</span>
-          <span class="repo-name">常见故障速查</span>
-          <span class="owner">症状 → 原因 → 处理</span>
-          <span class="lang-tag lang-unknown">诊断</span>
-        </div>
-        <div class="stars">
-          <div class="star-total">6 类高频问题</div>
-          <div class="category-tag">速查表</div>
-        </div>
-      </div>
-      <p class="desc">一句话简介：aiscan 生态常见故障的根因与处置速查，覆盖 workflow、面板、认证、限流四类问题。</p>
-      <div class="section-title">核心能力</div>
-      <ul class="features">
-        <li>面板无数据 → docs/history/ 为空 → 手动 Run workflow；确认 PATROL_TOKEN / GITHUB_TOKEN Secret 存在</li>
-        <li>workflow 红 → 依赖版本 / 权限 / 语法 → 点进 run 看 step 日志，cron 任务可手动 rerun</li>
-        <li>长期未运行 → Settings → Actions → General → Allow 权限被关</li>
-        <li>push 401/403 → token 失效或 2FA 强制 → 重新生成 token 更新清单与本地凭据</li>
-        <li>徽章 404 badge not found → shields 动态类型名写错（dynamic/json 非 dynamic/users）</li>
-        <li>Search API 限流 → 认证后 30/min，当前每日约 8 次调用余量充足</li>
-      </ul>
-      <div class="section-title">定位路径</div>
-      <div class="scenarios">
-        <span class="scenario-tag">Actions 页</span>
-        <span class="scenario-tag">Settings → Secrets</span>
-        <span class="scenario-tag">docs/history/</span>
-      </div>
-    </div>
-
-    <!-- 8. 部署与接入 -->
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <span class="rank-badge">部署</span>
-          <span class="repo-name">部署与使用方式</span>
-          <span class="owner">三种接入模式</span>
-          <span class="lang-tag lang-yaml">Action</span>
-        </div>
-        <div class="stars">
-          <div class="star-total">一键接入</div>
-          <div class="category-tag">deploy / use</div>
-        </div>
-      </div>
-      <p class="desc">一句话简介：aiscan 的三种使用入口——在线面板、GitHub Action、本地 CLI，覆盖查看、门禁、自检三类诉求。</p>
-      <div class="section-title">核心能力</div>
-      <ul class="features">
-        <li>在线面板：https://hedongli1.github.io/aiscan/（Pages 自动部署，push docs/ 即生效）</li>
-        <li>Action 接入：仓库加 .github/workflows/aiscan-security.yml，uses: hedongli1/aiscan@v1</li>
-        <li>本地 CLI：node bin/aiscan.js &lt;path&gt;（dogfooding 自检）；node benchmark/bench.js（基准）</li>
-        <li>版本策略：v1 tag 跟随最新修复 commit，用 @v1 保持自动跟随</li>
-        <li>计划：npm publish 后可用 npx aiscan（当前需 clone）</li>
-      </ul>
-      <div class="section-title">使用场景</div>
-      <div class="scenarios">
-        <span class="scenario-tag">CI 安全门禁</span>
-        <span class="scenario-tag">上线前扫描</span>
-        <span class="scenario-tag">密钥泄漏排查</span>
-        <span class="scenario-tag">开源社区接入</span>
-      </div>
-    </div>
-
-  </div>
+  <section class="patrol">
+    <h2><span class="pbar"></span>aiscan 开源仓库巡检状态</h2>
+    <p class="hint">由 <code>.github/workflows/patrol.yml</code> 每日巡检，结果写入 <code>docs/history/</code></p>
+    <div id="patrol-body"><span style="color:#6b7f9c;font-size:13px">加载中…</span></div>
+  </section>
 
   <footer>
-    <p>数据来源：<a href="https://github.com/hedongli1/aiscan" target="_blank">GitHub 生态维护清单（私密文档）</a> · 运营执行报告二/三/四（aiscan 启动部署 / 实弹接入 / 双项目收官） · 采集时间 2026-10-16 16:20</p>
-    <p style="margin-top:6px;">说明：页面覆盖 aiscan 仓库、在线巡检面板、patrol 定时巡检、规则库与基准测试、真实部署记录、维护要点、故障排查与部署接入 8 个维度。</p>
-    <p style="margin-top:6px;">仅供信息参考，数据以 GitHub 仓库与 Actions 实时状态为准</p>
+    数据来源：GitHub Search API（按关键词 + Star 排序检索仓库）· 页面为纯静态单文件，无外部依赖<br>
+    仓库：<a href="https://github.com/hedongli1/aiscan" target="_blank" rel="noopener">hedongli1/aiscan</a>
   </footer>
-
 </div>
+
+<script id="base-data" type="application/json">{"meta":{"source":"GitHub Search API","updated_at":"2026-10-16","total":70,"note":"由 scripts/fetch-tools.js 定时刷新；已收录工具的中文解读在刷新时增量保留"},"categories":[{"id":"ai-security","name":"AI/ML 安全","color":"#a78bfa","queries":["ai security","llm security","llm guardrails","prompt injection","ai red teaming"],"tools":[{"full_name":"usestrix/strix","name":"strix","owner":"usestrix","url":"https://github.com/usestrix/strix","stars":68855,"language":"Python","pushed_at":"2026-10-15","desc":"Open-source AI penetration testing tool to find and fix your app’s vulnerabilities.","summary":"开源 AI 渗透测试工具，自动发现并验证应用漏洞","tags":["AI渗透","自动化"]},{"full_name":"KeygraphHQ/shannon","name":"shannon","owner":"KeygraphHQ","url":"https://github.com/KeygraphHQ/shannon","stars":48935,"language":"TypeScript","pushed_at":"2026-10-15","desc":"Shannon is an AI pentester for web applications and APIs. It analyzes your source code, identifies attack vectors, and executes real exploits to prove vulnerabilities before they reach production.","summary":"面向 Web 应用与 API 的 AI 渗透测试器，分析源码定位漏洞","tags":["AI渗透","Web安全"]},{"full_name":"promptfoo/promptfoo","name":"promptfoo","owner":"promptfoo","url":"https://github.com/promptfoo/promptfoo","stars":26030,"language":"TypeScript","pushed_at":"2026-10-16","desc":"Test your prompts, agents, and RAGs. Red teaming/pentesting/vulnerability scanning for AI. Compare performance of GPT, Claude, Gemini, DeepSeek, and more. Simple declarative configs with command line and CI/CD integration.  Used by OpenAI and Anthropic.","summary":"LLM / Agent 红队测试与漏洞扫描框架，覆盖提示词与 RAG 评估","tags":["LLM红队","评测"]},{"full_name":"NVIDIA/SkillSpector","name":"SkillSpector","owner":"NVIDIA","url":"https://github.com/NVIDIA/SkillSpector","stars":20317,"language":"Python","pushed_at":"2026-10-15","desc":"Security scanner for AI agent skills. Detect vulnerabilities, malicious patterns, security risks, prompt injection, data exfiltration, and supply-chain risks in Claude Code, Codex, and MCP skills before you install them.","summary":"AI Agent 技能安全扫描器，检测不安全与恶意模式","tags":["Agent安全","扫描"]},{"full_name":"aliasrobotics/cai","name":"cai","owner":"aliasrobotics","url":"https://github.com/aliasrobotics/cai","stars":9835,"language":"Python","pushed_at":"2026-08-22","desc":"Cybersecurity AI (CAI), the framework for AI Security","summary":"Cybersecurity AI 框架，为 AI 安全研究提供自动化攻防能力","tags":["AI安全框架"]},{"full_name":"guardrails-ai/guardrails","name":"guardrails","owner":"guardrails-ai","url":"https://github.com/guardrails-ai/guardrails","stars":7527,"language":"Python","pushed_at":"2026-10-15","desc":"Adding guardrails to large language models.","summary":"为 LLM 应用加装输入输出护栏，约束模型行为与输出格式","tags":["护栏","运行时防护"]},{"full_name":"Tencent/AI-Infra-Guard","name":"AI-Infra-Guard","owner":"Tencent","url":"https://github.com/Tencent/AI-Infra-Guard","stars":6884,"language":"Python","pushed_at":"2026-10-16","desc":"A full-stack AI Red Teaming platform securing AI ecosystems via Agent Scan, Skills Scan, MCP scan, AI Infra scan and LLM jailbreak evaluation.","summary":"全栈 AI 红队平台，覆盖 Agent 扫描、技能扫描与模型风险评测","tags":["AI红队","平台"]},{"full_name":"superagent-ai/superagent","name":"superagent","owner":"superagent-ai","url":"https://github.com/superagent-ai/superagent","stars":6767,"language":"TypeScript","pushed_at":"2026-08-25","desc":"Superagent protects your AI applications against prompt injections, data leaks, and harmful outputs. Embed safety directly into your app and prove compliance to your customers.","summary":"AI 应用运行时防护，拦截提示注入、数据泄漏与有害输出","tags":["提示注入","防护"]},{"full_name":"Trusted-AI/adversarial-robustness-toolbox","name":"adversarial-robustness-toolbox","owner":"Trusted-AI","url":"https://github.com/Trusted-AI/adversarial-robustness-toolbox","stars":6279,"language":"Python","pushed_at":"2026-10-08","desc":"Adversarial Robustness Toolbox (ART) - Python Library for Machine Learning Security - Evasion, Poisoning, Extraction, Inference - Red and Blue Teams","summary":"对抗鲁棒性工具箱 ART，机器学习安全攻防标准库","tags":["对抗样本","研究"]},{"full_name":"meta-llama/PurpleLlama","name":"PurpleLlama","owner":"meta-llama","url":"https://github.com/meta-llama/PurpleLlama","stars":4433,"language":"Python","pushed_at":"2026-10-12","desc":"Set of tools to assess and improve LLM security.","summary":"Meta 开源的 LLM 安全工具集，含风险评测与防护组件","tags":["LLM安全","评测"]},{"full_name":"protectai/llm-guard","name":"llm-guard","owner":"protectai","url":"https://github.com/protectai/llm-guard","stars":3216,"language":"Python","pushed_at":"2026-07-08","desc":"The Security Toolkit for LLM Interactions","summary":"LLM 交互安全工具包，检测提示注入、越狱与敏感信息","tags":["LLM防护","检测"]},{"full_name":"confident-ai/deepteam","name":"deepteam","owner":"confident-ai","url":"https://github.com/confident-ai/deepteam","stars":3020,"language":"Python","pushed_at":"2026-10-01","desc":"DeepTeam is a framework to red team LLMs and AI agents.","summary":"LLM 与 AI Agent 红队测试框架，自动生成攻击用例","tags":["红队","测试"]}]},{"id":"redteam","name":"红队 / 渗透","color":"#f87171","queries":["red team","penetration testing"],"tools":[{"full_name":"vxcontrol/pentagi","name":"pentagi","owner":"vxcontrol","url":"https://github.com/vxcontrol/pentagi","stars":30531,"language":"Go","pushed_at":"2026-10-09","desc":"Fully autonomous AI Agents system capable of performing complex penetration testing tasks","summary":"全自主 AI Agent 渗透测试系统，自动执行复杂攻击任务","tags":["AI渗透","自主Agent"]},{"full_name":"GreyDGL/PentestGPT","name":"PentestGPT","owner":"GreyDGL","url":"https://github.com/GreyDGL/PentestGPT","stars":15964,"language":"Python","pushed_at":"2026-07-14","desc":"Automated Penetration Testing Agentic Framework Powered by Large Language Models","summary":"LLM 驱动的自动化渗透测试框架","tags":["LLM","自动化"]},{"full_name":"0x4m4/hexstrike-ai","name":"hexstrike-ai","owner":"0x4m4","url":"https://github.com/0x4m4/hexstrike-ai","stars":12819,"language":"Python","pushed_at":"2026-08-03","desc":"HexStrike AI MCP Agents is an advanced MCP server that lets AI agents (Claude, GPT, Copilot, etc.) autonomously run 150+ cybersecurity tools for automated pentesting, vulnerability discovery, bug bounty automation, and security research. Seamlessly bridge LLMs with real-world offensive security capabilities.","summary":"MCP 服务器，让 AI Agent 直接调用大量渗透工具","tags":["MCP","AI渗透"]},{"full_name":"redcanaryco/atomic-red-team","name":"atomic-red-team","owner":"redcanaryco","url":"https://github.com/redcanaryco/atomic-red-team","stars":12679,"language":"C","pushed_at":"2026-10-16","desc":"Small and highly portable detection tests based on MITRE's ATT&CK.","summary":"基于 MITRE ATT&CK 的原子化检测测试用例集","tags":["ATT&CK","检测验证"]},{"full_name":"Manisso/fsociety","name":"fsociety","owner":"Manisso","url":"https://github.com/Manisso/fsociety","stars":12340,"language":"Python","pushed_at":"2026-07-21","desc":"fsociety Hacking Tools Pack – A Penetration Testing Framework","summary":"渗透测试工具包，集成多种常见攻击工具","tags":["工具包"]},{"full_name":"1N3/Sn1per","name":"Sn1per","owner":"1N3","url":"https://github.com/1N3/Sn1per","stars":11447,"language":"Shell","pushed_at":"2026-07-04","desc":"Automated penetration testing & attack surface management platform. Recon, scan, exploit, report - 600+ exploits, 90+ integrations, 10K+ detections.","summary":"自动化渗透测试与攻击面管理平台，侦察到报告全流程","tags":["攻击面","自动化"]},{"full_name":"infosecn1nja/Red-Teaming-Toolkit","name":"Red-Teaming-Toolkit","owner":"infosecn1nja","url":"https://github.com/infosecn1nja/Red-Teaming-Toolkit","stars":10782,"language":null,"pushed_at":"2026-05-07","desc":"This repository contains cutting-edge open-source security tools (OST) for a red teamer and threat hunter.","summary":"红队与威胁模拟精选工具集","tags":["工具集"]},{"full_name":"samratashok/nishang","name":"nishang","owner":"samratashok","url":"https://github.com/samratashok/nishang","stars":10152,"language":"PowerShell","pushed_at":"2024-04-25","desc":"Nishang - Offensive PowerShell for red team, penetration testing and offensive security.","summary":"攻击性 PowerShell 脚本集，用于红队与渗透测试","tags":["PowerShell","后渗透"]},{"full_name":"j3ssie/osmedeus","name":"osmedeus","owner":"j3ssie","url":"https://github.com/j3ssie/osmedeus","stars":6601,"language":"Go","pushed_at":"2026-10-04","desc":"A Modern Orchestration Engine for Security","summary":"现代化安全编排引擎，自动化侦察与漏洞赏金流程","tags":["编排","侦察"]},{"full_name":"BitterSecurity/Decepticon","name":"Decepticon","owner":"BitterSecurity","url":"https://github.com/BitterSecurity/Decepticon","stars":6150,"language":"Python","pushed_at":"2026-10-16","desc":"Autonomous Hacking Agent for Red Team","summary":"面向红队的自主黑客 Agent","tags":["AI渗透","自主Agent"]},{"full_name":"FunnyWolf/Viper","name":"Viper","owner":"FunnyWolf","url":"https://github.com/FunnyWolf/Viper","stars":5327,"language":null,"pushed_at":"2026-05-31","desc":"Adversary simulation and Red teaming platform with AI","summary":"带 AI 能力的对手模拟与红队作战平台","tags":["红队平台","C2"]},{"full_name":"GH05TCREW/pentestagent","name":"pentestagent","owner":"GH05TCREW","url":"https://github.com/GH05TCREW/pentestagent","stars":3185,"language":"Python","pushed_at":"2026-10-12","desc":"PentestAgent is an AI agent framework for black-box security testing, supporting bug bounty, red-team, and penetration testing workflows.","summary":"黑盒安全测试 AI Agent 框架，面向漏洞赏金场景","tags":["AI渗透","黑盒"]}]},{"id":"ics-iot","name":"工控 / IoT 安全","color":"#fbbf24","queries":["ics security","scada","plc exploitation","modbus security"],"tools":[{"full_name":"ITI/ICS-Security-Tools","name":"ICS-Security-Tools","owner":"ITI","url":"https://github.com/ITI/ICS-Security-Tools","stars":2063,"language":"HTML","pushed_at":"2025-04-15","desc":"Tools, tips, tricks, and more for exploring ICS Security.","summary":"ICS 安全工具、技巧与资源集合","tags":["工具集"]},{"full_name":"mushorg/conpot","name":"conpot","owner":"mushorg","url":"https://github.com/mushorg/conpot","stars":1531,"language":"Python","pushed_at":"2026-10-12","desc":"ICS/SCADA honeypot","summary":"ICS / SCADA 蜜罐，模拟工控协议诱捕攻击行为","tags":["蜜罐","工控协议"]},{"full_name":"dark-lbp/isf","name":"isf","owner":"dark-lbp","url":"https://github.com/dark-lbp/isf","stars":1109,"language":"Python","pushed_at":"2024-01-04","desc":"ISF(Industrial Control System Exploitation Framework)，a exploitation framework based on Python","summary":"ISF 工控漏洞利用框架，基于 Python 的工控渗透工具","tags":["利用框架","工控"]},{"full_name":"nsacyber/GRASSMARLIN","name":"GRASSMARLIN","owner":"nsacyber","url":"https://github.com/nsacyber/GRASSMARLIN","stars":1061,"language":"Java","pushed_at":"2020-02-24","desc":"Provides situational awareness of Industrial Control Systems (ICS) and Supervisory Control and Data Acquisition (SCADA) networks in support of network security assessments. #nsacyber","summary":"NSA 开源的 ICS / SCADA 网络态势感知工具","tags":["态势感知","NSA"]},{"full_name":"zakharb/labshock","name":"labshock","owner":"zakharb","url":"https://github.com/zakharb/labshock","stars":799,"language":"Shell","pushed_at":"2026-05-28","desc":"OT Security Lab for ICS networks","summary":"ICS 网络 OT 安全实验环境","tags":["实验环境"]},{"full_name":"kh4sh3i/ICS-Pentesting-Tools","name":"ICS-Pentesting-Tools","owner":"kh4sh3i","url":"https://github.com/kh4sh3i/ICS-Pentesting-Tools","stars":362,"language":null,"pushed_at":"2021-11-01","desc":"A curated list of tools related to Industrial Control System (ICS) security and Penetration Testing","summary":"ICS 安全与渗透测试工具清单","tags":["工具清单"]},{"full_name":"Fortiphyd/GRFICSv3","name":"GRFICSv3","owner":"Fortiphyd","url":"https://github.com/Fortiphyd/GRFICSv3","stars":271,"language":"C++","pushed_at":"2026-10-14","desc":"GRFICSv3 is a FREE and open source OT security lab with realistic networking and a 3D process simulation for training and learning ICS security","summary":"免费开源的 OT 安全实验平台，含 3D 过程仿真","tags":["仿真","实验"]},{"full_name":"wavestone-cdt/dyode","name":"dyode","owner":"wavestone-cdt","url":"https://github.com/wavestone-cdt/dyode","stars":196,"language":"Python","pushed_at":"2023-09-02","desc":"A low-cost, DIY data diode for ICS","summary":"低成本 DIY 数据二极管，用于 ICS 单向隔离","tags":["数据二极管","隔离"]},{"full_name":"thiagoralves/EtherSploit-IP","name":"EtherSploit-IP","owner":"thiagoralves","url":"https://github.com/thiagoralves/EtherSploit-IP","stars":89,"language":"C","pushed_at":"2020-04-24","desc":"Exploiting Allen-Bradley E/IP PLCs","summary":"针对 Allen-Bradley EtherNet/IP PLC 的漏洞利用","tags":["PLC","漏洞利用"]},{"full_name":"aravind0x7/BusPwn","name":"BusPwn","owner":"aravind0x7","url":"https://github.com/aravind0x7/BusPwn","stars":32,"language":"Python","pushed_at":"2025-04-19","desc":"BusPwn V1.0 is a powerful Modbus hacking framework designed for testing and exploiting vulnerabilities in Modbus-based systems commonly found in Industrial Control Systems (ICS) and Operational Technology (OT).","summary":"Modbus 攻击框架，用于测试与利用 Modbus 漏洞","tags":["Modbus","攻击框架"]}]},{"id":"hunting-dfir","name":"威胁狩猎 / DFIR","color":"#34d399","queries":["threat hunting","dfir"],"tools":[{"full_name":"meirwah/awesome-incident-response","name":"awesome-incident-response","owner":"meirwah","url":"https://github.com/meirwah/awesome-incident-response","stars":9455,"language":null,"pushed_at":"2026-10-13","desc":"A curated list of tools for incident response","summary":"应急响应工具精选清单","tags":["清单"]},{"full_name":"LOLBAS-Project/LOLBAS","name":"LOLBAS","owner":"LOLBAS-Project","url":"https://github.com/LOLBAS-Project/LOLBAS","stars":8873,"language":"XSLT","pushed_at":"2026-09-26","desc":"Living Off The Land Binaries And Scripts - (LOLBins and LOLScripts)","summary":"生活在地攻击二进制与脚本（LOLBins / LOLScripts）知识库","tags":["LOLBins","知识库"]},{"full_name":"zeek/zeek","name":"zeek","owner":"zeek","url":"https://github.com/zeek/zeek","stars":8108,"language":"C++","pushed_at":"2026-10-16","desc":"Zeek is a powerful network analysis framework that is much different from the typical IDS you may know.","summary":"强大的网络分析框架，用于流量监控与安全分析","tags":["流量分析","NSM"]},{"full_name":"cugu/awesome-forensics","name":"awesome-forensics","owner":"cugu","url":"https://github.com/cugu/awesome-forensics","stars":5216,"language":null,"pushed_at":"2026-09-26","desc":"⭐️ A curated list of awesome forensic analysis tools and resources","summary":"取证分析工具与资源精选清单","tags":["清单"]},{"full_name":"clong/DetectionLab","name":"DetectionLab","owner":"clong","url":"https://github.com/clong/DetectionLab","stars":5045,"language":"HTML","pushed_at":"2024-07-06","desc":"Automate the creation of a lab environment complete with security tooling and logging best practices","summary":"一键构建含安全工具与日志最佳实践的检测实验环境","tags":["实验环境"]},{"full_name":"Security-Onion-Solutions/securityonion","name":"securityonion","owner":"Security-Onion-Solutions","url":"https://github.com/Security-Onion-Solutions/securityonion","stars":4931,"language":"Shell","pushed_at":"2026-10-15","desc":"Security Onion is a free and open platform for threat hunting, enterprise security monitoring, and log management. It includes our own interfaces for alerting, dashboards, hunting, PCAP, detections, and case management. It also includes other tools such as osquery, CyberChef, Elasticsearch, Logstash, Kibana, Suricata, and Zeek.","summary":"免费开源的威胁狩猎与企业安全监控平台","tags":["威胁狩猎","平台"]},{"full_name":"intelowlproject/IntelOwl","name":"IntelOwl","owner":"intelowlproject","url":"https://github.com/intelowlproject/IntelOwl","stars":4755,"language":"Python","pushed_at":"2026-10-15","desc":"IntelOwl: manage your Threat Intelligence at scale","summary":"规模化威胁情报管理与分析平台","tags":["威胁情报","平台"]},{"full_name":"OTRF/ThreatHunter-Playbook","name":"ThreatHunter-Playbook","owner":"OTRF","url":"https://github.com/OTRF/ThreatHunter-Playbook","stars":4689,"language":"Python","pushed_at":"2026-01-12","desc":"A community-driven, open-source project to share detection logic, adversary tradecraft and resources to make detection development more efficient.","summary":"社区驱动的威胁狩猎剧本与检测逻辑库","tags":["狩猎剧本"]},{"full_name":"alexandreborges/malwoverview","name":"malwoverview","owner":"alexandreborges","url":"https://github.com/alexandreborges/malwoverview","stars":4132,"language":"Python","pushed_at":"2026-09-22","desc":"Malwoverview is a first response tool for threat hunting across VirusTotal, Hybrid Analysis, URLHaus, Polyswarm, Malshare, Alien Vault, Malpedia, Malware Bazaar, ThreatFox, Triage, IPInfo, Shodan, AbuseIPDB, GreyNoise, URLScan.io, Whois/RDAP, NIST, and VulnCheck. Supports LLM enrichment, IOC extraction, YARA scanning, and Android analysis.","summary":"跨 VirusTotal / Hybrid Analysis 等平台的首响应狩猎工具","tags":["首响应","情报聚合"]},{"full_name":"Neo23x0/Loki","name":"Loki","owner":"Neo23x0","url":"https://github.com/Neo23x0/Loki","stars":3800,"language":"Python","pushed_at":"2026-01-12","desc":"Loki - Simple IOC and YARA Scanner","summary":"简易 IOC 与 YARA 扫描器，用于端点威胁排查","tags":["IOC","YARA"]},{"full_name":"WithSecureOpenSource/chainsaw","name":"chainsaw","owner":"WithSecureOpenSource","url":"https://github.com/WithSecureOpenSource/chainsaw","stars":3691,"language":"Rust","pushed_at":"2026-10-14","desc":"Rapidly Search and Hunt through Windows Forensic Artefacts","summary":"快速检索与狩猎 Windows 取证痕迹（EVTX 等）","tags":["Windows取证","EVTX"]},{"full_name":"google/timesketch","name":"timesketch","owner":"google","url":"https://github.com/google/timesketch","stars":3436,"language":"Python","pushed_at":"2026-10-14","desc":"Collaborative forensic timeline analysis","summary":"协同式取证时间线分析平台","tags":["时间线","取证"]}]},{"id":"cloud-container","name":"云 / 容器安全","color":"#38bdf8","queries":["kubernetes security","cloud security"],"tools":[{"full_name":"aquasecurity/trivy","name":"trivy","owner":"aquasecurity","url":"https://github.com/aquasecurity/trivy","stars":38448,"language":"Go","pushed_at":"2026-10-15","desc":"Find vulnerabilities, misconfigurations, secrets, SBOM in containers, Kubernetes, code repositories, clouds and more","summary":"容器 / K8s / 代码仓库的漏洞、配置与密钥一体化扫描器","tags":["镜像扫描","综合"]},{"full_name":"projectdiscovery/nuclei","name":"nuclei","owner":"projectdiscovery","url":"https://github.com/projectdiscovery/nuclei","stars":32057,"language":"Go","pushed_at":"2026-10-15","desc":"Nuclei is a fast, customizable vulnerability scanner powered by the global security community and built on a simple YAML-based DSL, enabling collaboration to tackle trending vulnerabilities on the internet. It helps you find vulnerabilities in your applications, APIs, networks, DNS, and cloud configurations.","summary":"基于模板的快速漏洞扫描器，社区模板生态庞大","tags":["漏洞扫描","模板"]},{"full_name":"Infisical/infisical","name":"infisical","owner":"Infisical","url":"https://github.com/Infisical/infisical","stars":29789,"language":"TypeScript","pushed_at":"2026-10-16","desc":"Infisical is the open-source platform for securing secrets, certificates, access, and AI Agents.","summary":"开源密钥、证书与访问管理平台，覆盖 AI Agent 凭据","tags":["密钥管理"]},{"full_name":"authelia/authelia","name":"authelia","owner":"authelia","url":"https://github.com/authelia/authelia","stars":29277,"language":"Go","pushed_at":"2026-10-16","desc":"The Single Sign-On Multi-Factor portal for web apps. OpenID Certified™ and Post-Quantum Cryptography Ready.","summary":"Web 应用单点登录与多因素认证门户","tags":["SSO","MFA"]},{"full_name":"cilium/cilium","name":"cilium","owner":"cilium","url":"https://github.com/cilium/cilium","stars":25664,"language":"Go","pushed_at":"2026-10-16","desc":"eBPF-based Networking, Security, and Observability","summary":"基于 eBPF 的网络、安全与可观测性平台","tags":["eBPF","网络"]},{"full_name":"gravitational/teleport","name":"teleport","owner":"gravitational","url":"https://github.com/gravitational/teleport","stars":20997,"language":"Go","pushed_at":"2026-09-17","desc":"The easiest, and most secure way to access and protect all of your infrastructure.","summary":"统一基础设施访问与防护平台（SSH / K8s / DB）","tags":["访问控制","零信任"]},{"full_name":"wazuh/wazuh","name":"wazuh","owner":"wazuh","url":"https://github.com/wazuh/wazuh","stars":17278,"language":"C++","pushed_at":"2026-10-16","desc":"Wazuh - The Open Source Security Platform. Unified XDR and SIEM protection for endpoints and cloud workloads.","summary":"开源 XDR / SIEM 平台，统一端点与云工作负载防护","tags":["XDR","SIEM"]},{"full_name":"cryptomator/cryptomator","name":"cryptomator","owner":"cryptomator","url":"https://github.com/cryptomator/cryptomator","stars":16314,"language":"Java","pushed_at":"2026-10-15","desc":"Cryptomator for Windows, macOS, and Linux: Secure client-side encryption for your cloud storage, ensuring privacy and control over your data.","summary":"云存储客户端加密工具，端到端保护云上文件","tags":["加密","云存储"]},{"full_name":"crowdsecurity/crowdsec","name":"crowdsec","owner":"crowdsecurity","url":"https://github.com/crowdsecurity/crowdsec","stars":15191,"language":"Go","pushed_at":"2026-10-15","desc":"Open-source IDS/IPS, WAF and bot detection for Linux, Windows, Docker and Kubernetes, with a crowdsourced blocklist of malicious IPs.","summary":"开源 IDS/IPS、WAF 与爬虫检测，支持 Linux / 容器 / K8s","tags":["IDS","行为检测"]},{"full_name":"prowler-cloud/prowler","name":"prowler","owner":"prowler-cloud","url":"https://github.com/prowler-cloud/prowler","stars":15038,"language":"Python","pushed_at":"2026-10-15","desc":"Prowler is the world’s most widely used open-source cloud security platform that automates security and compliance across any cloud environment.","summary":"广泛使用的开源云安全平台，自动化云配置审计","tags":["云审计","合规"]},{"full_name":"OpenNHP/opennhp","name":"opennhp","owner":"OpenNHP","url":"https://github.com/OpenNHP/opennhp","stars":13938,"language":"Go","pushed_at":"2026-10-15","desc":"A lightweight, cryptography-powered, open-source toolkit built to enforce Zero Trust security for infrastructure, applications, and data in the AI-driven world.","summary":"轻量级密码学零信任安全工具包（网络隐藏协议）","tags":["零信任"]},{"full_name":"kubescape/kubescape","name":"kubescape","owner":"kubescape","url":"https://github.com/kubescape/kubescape","stars":11803,"language":"Go","pushed_at":"2026-10-15","desc":"Kubescape is an open-source Kubernetes security platform for your IDE, CI/CD pipelines, and clusters. It includes risk analysis, security, compliance, and misconfiguration scanning, saving Kubernetes users and administrators precious time, effort, and resources.","summary":"Kubernetes 安全平台，覆盖 IDE、CI/CD 与集群","tags":["K8s","合规"]}]},{"id":"code-audit","name":"代码审计 / 密钥检测","color":"#f472b6","queries":["sast","secret scanning"],"tools":[{"full_name":"trufflesecurity/trufflehog","name":"trufflehog","owner":"trufflesecurity","url":"https://github.com/trufflesecurity/trufflehog","stars":28530,"language":"Go","pushed_at":"2026-10-15","desc":"Find, verify, and analyze leaked credentials","summary":"发现、验证并分析泄漏凭据的密钥扫描器","tags":["密钥扫描","验证"]},{"full_name":"semgrep/semgrep","name":"semgrep","owner":"semgrep","url":"https://github.com/semgrep/semgrep","stars":17078,"language":"C","pushed_at":"2026-10-16","desc":"Lightweight static analysis for many languages. Find bug variants with patterns that look like source code.","summary":"轻量级多语言静态分析（SAST），用类代码模式查找漏洞","tags":["SAST","静态分析"]},{"full_name":"lintsinghua/DeepAudit","name":"DeepAudit","owner":"lintsinghua","url":"https://github.com/lintsinghua/DeepAudit","stars":7168,"language":"Python","pushed_at":"2026-10-01","desc":"DeepAudit：人人拥有的 AI 黑客战队，让漏洞挖掘触手可及。小白一键部署运行，自主协作审计 + 自动化沙箱 PoC 验证。支持 Ollama 私有部署 ，一键生成报告。支持中转站。​让安全不再昂贵，让审计不再复杂。","summary":"AI 代码审计系统，自主协作审计 + 沙箱 PoC 验证","tags":["AI审计","PoC"]},{"full_name":"dwisiswant0/apkleaks","name":"apkleaks","owner":"dwisiswant0","url":"https://github.com/dwisiswant0/apkleaks","stars":6353,"language":"Python","pushed_at":"2025-08-20","desc":"Scanning APK file for URIs, endpoints & secrets.","summary":"扫描 APK 中的 URI、端点与密钥","tags":["移动安全","密钥"]},{"full_name":"tenable/terrascan","name":"terrascan","owner":"tenable","url":"https://github.com/tenable/terrascan","stars":5212,"language":"Go","pushed_at":"2025-11-20","desc":"Detect compliance and security violations across Infrastructure as Code to mitigate risk before provisioning cloud native infrastructure.","summary":"IaC 合规与安全违规检测，部署前拦截风险","tags":["IaC","合规"]},{"full_name":"edoardottt/cariddi","name":"cariddi","owner":"edoardottt","url":"https://github.com/edoardottt/cariddi","stars":3790,"language":"Go","pushed_at":"2026-10-13","desc":"Take a list of domains, crawl urls and scan for endpoints, secrets, api keys, file extensions, tokens and more","summary":"域名爬取 + 端点 / 密钥 / API Key 泄露扫描","tags":["侦察","密钥"]},{"full_name":"Bearer/bearer","name":"bearer","owner":"Bearer","url":"https://github.com/Bearer/bearer","stars":2758,"language":"Go","pushed_at":"2026-10-12","desc":"Code security scanning tool (SAST) to discover, filter and prioritize security and privacy risks.","summary":"代码安全扫描（SAST），按优先级排序安全与隐私风险","tags":["SAST","隐私"]},{"full_name":"ajinabraham/nodejsscan","name":"nodejsscan","owner":"ajinabraham","url":"https://github.com/ajinabraham/nodejsscan","stars":2577,"language":"CSS","pushed_at":"2026-09-21","desc":"nodejsscan is a static security code scanner for Node.js applications.","summary":"Node.js 应用静态安全代码扫描器","tags":["Node.js","SAST"]},{"full_name":"google/mantis","name":"mantis","owner":"google","url":"https://github.com/google/mantis","stars":2452,"language":"Python","pushed_at":"2026-10-16","desc":"A modular, stack-agnostic toolkit for AI coding agents to autonomously find, reproduce, and patch vulnerabilities.","summary":"模块化 AI 代码审计工具包，自主发现、复现与修复漏洞","tags":["AI审计","自动化"]},{"full_name":"betterleaks/betterleaks","name":"betterleaks","owner":"betterleaks","url":"https://github.com/betterleaks/betterleaks","stars":2238,"language":"Go","pushed_at":"2026-10-15","desc":"Find leaked secrets everywhere.","summary":"跨代码托管平台发现泄漏密钥","tags":["密钥扫描"]},{"full_name":"hannob/snallygaster","name":"snallygaster","owner":"hannob","url":"https://github.com/hannob/snallygaster","stars":2114,"language":"Python","pushed_at":"2026-10-14","desc":"Tool to scan for secret files on HTTP servers","summary":"扫描服务器上的敏感文件与备份文件泄露","tags":["信息泄露","Web"]},{"full_name":"GitGuardian/ggshield","name":"ggshield","owner":"GitGuardian","url":"https://github.com/GitGuardian/ggshield","stars":2006,"language":"Python","pushed_at":"2026-10-15","desc":"Detect and validate 500+ types of hardcoded secrets with advanced checks. Use it as a pre-commit hook, GitHub Action, or CLI for proactive secret detection and security.","summary":"检测并验证 500+ 类硬编码密钥，可作 pre-commit 钩子","tags":["密钥检测","CI"]}]}]}</script>
+<script>
+const CAT_COLORS = {"ai-security":"#a78bfa","redteam":"#f87171","ics-iot":"#fbbf24","hunting-dfir":"#34d399","cloud-container":"#38bdf8","code-audit":"#f472b6"};
+const BASE = JSON.parse(document.getElementById('base-data').textContent);
+let DATA = BASE;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const st = { q:'', sort:'stars', lang:'', cats:new Set() };
+
+function allTools(){
+  const out = [];
+  (DATA.categories || []).forEach(c => (c.tools || []).forEach(t => out.push(Object.assign({catId:c.id, catName:c.name, color:c.color || CAT_COLORS[c.id]}, t))));
+  return out;
+}
+
+function apply(list){
+  const q = st.q.trim().toLowerCase();
+  let r = list.filter(t => {
+    if (st.cats.size && !st.cats.has(t.catId)) return false;
+    if (st.lang && (t.language || '') !== st.lang) return false;
+    if (!q) return true;
+    const hay = [t.full_name, t.desc, t.summary, (t.tags || []).join(' '), t.language].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+  const cmp = {
+    stars: (a,b) => (b.stars||0)-(a.stars||0),
+    updated: (a,b) => String(b.pushed_at||'').localeCompare(String(a.pushed_at||'')) || (b.stars||0)-(a.stars||0),
+    name: (a,b) => String(a.full_name||'').toLowerCase().localeCompare(String(b.full_name||'').toLowerCase())
+  }[st.sort];
+  return r.sort(cmp);
+}
+
+function toolCard(t){
+  const [owner, name] = String(t.full_name || '').split('/');
+  const tags = (t.tags || []).map(x => '<span class="tag">' + esc(x) + '</span>').join('');
+  const langDot = t.language ? '<span class="lang"><span class="dot"></span>' + esc(t.language) + '</span>' : '';
+  return '<article class="tool">'
+    + '<div class="tool-top"><a class="name" href="' + esc(t.url) + '" target="_blank" rel="noopener">'
+    + esc(name || t.full_name) + '<span class="owner"> / ' + esc(owner) + '</span></a>'
+    + '<span class="stars">' + (t.stars >= 0 ? '★ ' + Number(t.stars).toLocaleString() : '') + '</span></div>'
+    + (t.summary ? '<p class="sum">' + esc(t.summary) + '</p>' : '')
+    + (t.desc && !t.summary ? '<p class="desc">' + esc(t.desc) + '</p>' : '')
+    + '<div class="tool-foot">' + langDot
+    + (t.pushed_at ? '<span class="upd">更新 ' + esc(t.pushed_at) + '</span>' : '')
+    + tags + '</div></article>';
+}
+
+function renderChips(){
+  const cats = DATA.categories || [];
+  $('#cats').innerHTML = cats.map(c => {
+    const col = c.color || CAT_COLORS[c.id] || '#94a3b8';
+    const on = st.cats.has(c.id);
+    return '<span class="chip' + (on ? ' on' : '') + '" data-cat="' + esc(c.id) + '" data-c="' + esc(col) + '"'
+      + (on ? ' style="background:' + col + '"' : ' style="border-color:' + col + '55;color:' + col + '"') + '>'
+      + esc(c.name) + ' ' + ((c.tools || []).length) + '</span>';
+  }).join('');
+  document.querySelectorAll('.chip').forEach(el => el.onclick = () => {
+    const id = el.dataset.cat;
+    st.cats.has(id) ? st.cats.delete(id) : st.cats.add(id);
+    renderChips(); render();
+  });
+}
+
+function render(){
+  const cats = DATA.categories || [];
+  const m = DATA.meta || {};
+  $('#m-updated').textContent = m.updated_at || '—';
+  const total = cats.reduce((n,c) => n + ((c.tools||[]).length), 0);
+  $('#m-total').textContent = (m.total || total) + ' 个工具';
+  $('#m-cats').textContent = cats.length + ' 个';
+
+  // 语言下拉
+  const langs = [...new Set(allTools().map(t => t.language).filter(Boolean))].sort();
+  const sel = $('#lang');
+  if (sel.options.length - 1 !== langs.length){
+    sel.innerHTML = '<option value="">全部语言</option>' + langs.map(l => '<option' + (l === st.lang ? ' selected' : '') + '>' + esc(l) + '</option>').join('');
+  }
+
+  const picked = new Set([...st.cats]);
+  if (st.q.trim()) cats.forEach(c => picked.add(c.id));
+
+  const html = cats.filter(c => !st.cats.size || st.cats.has(c.id)).map(c => {
+    const list = apply((c.tools||[]).map(t => Object.assign({catId:c.id}, t)));
+    if (!list.length) return '';
+    const col = c.color || CAT_COLORS[c.id] || '#94a3b8';
+    return '<section class="cat" style="--c:' + col + '">'
+      + '<div class="cat-head"><span class="cat-bar"></span><h2>' + esc(c.name) + '</h2>'
+      + '<span class="cat-count">' + list.length + ' / ' + (c.tools||[]).length + '</span>'
+      + (c.queries ? '<span class="cat-queries">检索词：' + esc(c.queries.join(' · ')) + '</span>' : '')
+      + '</div><div class="grid">' + list.map(toolCard).join('') + '</div></section>';
+  }).join('');
+
+  $('#board').innerHTML = html;
+  const any = cats.some(c => (!st.cats.size || st.cats.has(c.id)) && apply((c.tools||[]).map(t => Object.assign({catId:c.id}, t))).length);
+  $('#empty').hidden = any;
+}
+
+/* ---- 巡检状态 ---- */
+async function patrol(){
+  const box = $('#patrol-body');
+  let days = null, updatedAt = null;
+  try {
+    const r = await fetch('data/patrol-index.json', {cache:'no-store'});
+    if (r.ok){ const j = await r.json(); if (j && j.days && j.days.length){ days = j.days; updatedAt = j.updatedAt || null; } }
+  } catch(e){}
+  if (!days){
+    const got = [];
+    const now = Date.now();
+    for (let i = 0; i < 12 && got.length < 6; i++){
+      const d = new Date(now - i * 864e5).toISOString().slice(0,10);
+      try {
+        const r = await fetch('history/' + d + '.json', {cache:'no-store'});
+        if (r.ok){
+          const j = await r.json(), rp = j.report || {};
+          got.push({date: j.date || d, scanned: rp.scanned||0, clean: rp.cleanRepos||0,
+                    flagged: (rp.flaggedRepos||[]).length, issues: rp.issuesOpened||0, errors: (rp.errors||[]).length});
+        }
+      } catch(e){}
+    }
+    if (got.length) days = got;
+  }
+  if (!days || !days.length){
+    box.innerHTML = '<span style="color:#6b7f9c;font-size:13px">暂无巡检数据 —— patrol workflow 跑完首轮后此处会显示最近一次巡检统计与近 30 天趋势。</span>';
+    return;
+  }
+  days = days.slice().sort((a,b) => String(b.date).localeCompare(String(a.date)));
+  const last = days[0];
+  const maxF = Math.max(1, ...days.map(d => d.flagged || 0));
+  const trend = days.slice().reverse().map(d => '<i title="' + esc(d.date) + '：' + (d.flagged||0) + ' 仓库命中" style="height:' + Math.max(4, Math.round((d.flagged||0)/maxF*100)) + '%"></i>').join('');
+  const rows = days.slice(0, 7).map(d =>
+    '<div class="prow"><span>' + esc(d.date) + '</span><span>扫描 ' + (d.scanned||0) + '</span>'
+    + '<b>命中 ' + (d.flagged||0) + '</b><span>无风险 ' + (d.clean||0) + '</span>'
+    + (d.issues ? '<span>已开 issue ' + d.issues + '</span>' : '')
+    + '<a class="plink" href="history/' + esc(d.date) + '.json" target="_blank" rel="noopener">查看报告</a></div>').join('');
+  box.innerHTML =
+    '<div class="pstats">'
+    + '<div class="pstat"><div class="n">' + (last.scanned||0) + '</div><div class="l">最近扫描仓库</div></div>'
+    + '<div class="pstat"><div class="n">' + (last.flagged||0) + '</div><div class="l">命中风险</div></div>'
+    + '<div class="pstat"><div class="n">' + (last.clean||0) + '</div><div class="l">无风险</div></div>'
+    + '<div class="pstat"><div class="n">' + days.length + '</div><div class="l">已有报告天数</div></div>'
+    + '</div>'
+    + '<div style="font-size:12px;color:#6b7f9c">最近一次：' + esc(last.date) + '</div>'
+    + '<div class="trend">' + trend + '</div>'
+    + '<div style="font-size:11.5px;color:#6b7f9c;margin-bottom:12px">近 ' + days.length + ' 次巡检命中趋势</div>'
+    + rows;
+}
+
+/* ---- 事件 ---- */
+$('#q').oninput = e => { st.q = e.target.value; render(); };
+$('#sort').onchange = e => { st.sort = e.target.value; render(); };
+$('#lang').onchange = e => { st.lang = e.target.value; render(); };
+$('#reset').onclick = () => { st.q=''; st.sort='stars'; st.lang=''; st.cats.clear(); $('#q').value=''; $('#sort').value='stars'; $('#lang').value=''; renderChips(); render(); };
+
+(async () => {
+  try {
+    const r = await fetch('data/tools.json', {cache:'no-store'});
+    if (r.ok){ const j = await r.json(); if (j && j.categories && j.categories.length) DATA = j; }
+  } catch(e){}
+  renderChips(); render(); patrol();
+})();
+</script>
 </body>
 </html>

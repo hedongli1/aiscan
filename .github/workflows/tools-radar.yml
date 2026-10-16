@@ -1,0 +1,51 @@
+name: tools-radar
+
+# 工具发现库数据刷新：每方向按关键词检索 GitHub 高星仓库，生成 docs/data/tools.json
+on:
+  schedule:
+    # 每日 UTC 21:40（北京时间 05:40），与 patrol（UTC 17:00）错峰
+    - cron: "40 21 * * *"
+  workflow_dispatch:
+    inputs:
+      per_cat:
+        description: "每个方向收录数量"
+        required: false
+        default: "12"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tools-radar
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 刷新工具数据
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PER_CAT: ${{ github.event.inputs.per_cat || '12' }}
+        run: node scripts/fetch-tools.js
+
+      - name: 提交数据变更
+        run: |
+          git config user.name "aiscan-radar-bot"
+          git config user.email "hedongli1@users.noreply.github.com"
+          git add docs/data/tools.json
+          if git diff --cached --quiet; then
+            echo "数据无变化，跳过提交"
+          else
+            git commit -m "chore(radar): $(date -u +%F) 刷新工具发现库数据 [skip ci]"
+            git push
+            echo "已提交并推送"
+          fi

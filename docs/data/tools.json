@@ -1,0 +1,1118 @@
+{
+ "meta": {
+  "source": "GitHub Search API",
+  "updated_at": "2026-10-16",
+  "total": 70,
+  "note": "由 scripts/fetch-tools.js 定时刷新；已收录工具的中文解读在刷新时增量保留"
+ },
+ "categories": [
+  {
+   "id": "ai-security",
+   "name": "AI/ML 安全",
+   "color": "#a78bfa",
+   "queries": [
+    "ai security",
+    "llm security",
+    "llm guardrails",
+    "prompt injection",
+    "ai red teaming"
+   ],
+   "tools": [
+    {
+     "full_name": "usestrix/strix",
+     "name": "strix",
+     "owner": "usestrix",
+     "url": "https://github.com/usestrix/strix",
+     "stars": 68855,
+     "language": "Python",
+     "pushed_at": "2026-10-15",
+     "desc": "Open-source AI penetration testing tool to find and fix your app’s vulnerabilities.",
+     "summary": "开源 AI 渗透测试工具，自动发现并验证应用漏洞",
+     "tags": [
+      "AI渗透",
+      "自动化"
+     ]
+    },
+    {
+     "full_name": "KeygraphHQ/shannon",
+     "name": "shannon",
+     "owner": "KeygraphHQ",
+     "url": "https://github.com/KeygraphHQ/shannon",
+     "stars": 48935,
+     "language": "TypeScript",
+     "pushed_at": "2026-10-15",
+     "desc": "Shannon is an AI pentester for web applications and APIs. It analyzes your source code, identifies attack vectors, and executes real exploits to prove vulnerabilities before they reach production.",
+     "summary": "面向 Web 应用与 API 的 AI 渗透测试器，分析源码定位漏洞",
+     "tags": [
+      "AI渗透",
+      "Web安全"
+     ]
+    },
+    {
+     "full_name": "promptfoo/promptfoo",
+     "name": "promptfoo",
+     "owner": "promptfoo",
+     "url": "https://github.com/promptfoo/promptfoo",
+     "stars": 26030,
+     "language": "TypeScript",
+     "pushed_at": "2026-10-16",
+     "desc": "Test your prompts, agents, and RAGs. Red teaming/pentesting/vulnerability scanning for AI. Compare performance of GPT, Claude, Gemini, DeepSeek, and more. Simple declarative configs with command line and CI/CD integration.  Used by OpenAI and Anthropic.",
+     "summary": "LLM / Agent 红队测试与漏洞扫描框架，覆盖提示词与 RAG 评估",
+     "tags": [
+      "LLM红队",
+      "评测"
+     ]
+    },
+    {
+     "full_name": "NVIDIA/SkillSpector",
+     "name": "SkillSpector",
+     "owner": "NVIDIA",
+     "url": "https://github.com/NVIDIA/SkillSpector",
+     "stars": 20317,
+     "language": "Python",
+     "pushed_at": "2026-10-15",
+     "desc": "Security scanner for AI agent skills. Detect vulnerabilities, malicious patterns, security risks, prompt injection, data exfiltration, and supply-chain risks in Claude Code, Codex, and MCP skills before you install them.",
+     "summary": "AI Agent 技能安全扫描器，检测不安全与恶意模式",
+     "tags": [
+      "Agent安全",
+      "扫描"
+     ]
+    },
+    {
+     "full_name": "aliasrobotics/cai",
+     "name": "cai",
+     "owner": "aliasrobotics",
+     "url": "https://github.com/aliasrobotics/cai",
+     "stars": 9835,
+     "language": "Python",
+     "pushed_at": "2026-08-22",
+     "desc": "Cybersecurity AI (CAI), the framework for AI Security",
+     "summary": "Cybersecurity AI 框架，为 AI 安全研究提供自动化攻防能力",
+     "tags": [
+      "AI安全框架"
+     ]
+    },
+    {
+     "full_name": "guardrails-ai/guardrails",
+     "name": "guardrails",
+     "owner": "guardrails-ai",
+     "url": "https://github.com/guardrails-ai/guardrails",
+     "stars": 7527,
+     "language": "Python",
+     "pushed_at": "2026-10-15",
+     "desc": "Adding guardrails to large language models.",
+     "summary": "为 LLM 应用加装输入输出护栏，约束模型行为与输出格式",
+     "tags": [
+      "护栏",
+      "运行时防护"
+     ]
+    },
+    {
+     "full_name": "Tencent/AI-Infra-Guard",
+     "name": "AI-Infra-Guard",
+     "owner": "Tencent",
+     "url": "https://github.com/Tencent/AI-Infra-Guard",
+     "stars": 6884,
+     "language": "Python",
+     "pushed_at": "2026-10-16",
+     "desc": "A full-stack AI Red Teaming platform securing AI ecosystems via Agent Scan, Skills Scan, MCP scan, AI Infra scan and LLM jailbreak evaluation.",
+     "summary": "全栈 AI 红队平台，覆盖 Agent 扫描、技能扫描与模型风险评测",
+     "tags": [
+      "AI红队",
+      "平台"
+     ]
+    },
+    {
+     "full_name": "superagent-ai/superagent",
+     "name": "superagent",
+     "owner": "superagent-ai",
+     "url": "https://github.com/superagent-ai/superagent",
+     "stars": 6767,
+     "language": "TypeScript",
+     "pushed_at": "2026-08-25",
+     "desc": "Superagent protects your AI applications against prompt injections, data leaks, and harmful outputs. Embed safety directly into your app and prove compliance to your customers.",
+     "summary": "AI 应用运行时防护，拦截提示注入、数据泄漏与有害输出",
+     "tags": [
+      "提示注入",
+      "防护"
+     ]
+    },
+    {
+     "full_name": "Trusted-AI/adversarial-robustness-toolbox",
+     "name": "adversarial-robustness-toolbox",
+     "owner": "Trusted-AI",
+     "url": "https://github.com/Trusted-AI/adversarial-robustness-toolbox",
+     "stars": 6279,
+     "language": "Python",
+     "pushed_at": "2026-10-08",
+     "desc": "Adversarial Robustness Toolbox (ART) - Python Library for Machine Learning Security - Evasion, Poisoning, Extraction, Inference - Red and Blue Teams",
+     "summary": "对抗鲁棒性工具箱 ART，机器学习安全攻防标准库",
+     "tags": [
+      "对抗样本",
+      "研究"
+     ]
+    },
+    {
+     "full_name": "meta-llama/PurpleLlama",
+     "name": "PurpleLlama",
+     "owner": "meta-llama",
+     "url": "https://github.com/meta-llama/PurpleLlama",
+     "stars": 4433,
+     "language": "Python",
+     "pushed_at": "2026-10-12",
+     "desc": "Set of tools to assess and improve LLM security.",
+     "summary": "Meta 开源的 LLM 安全工具集，含风险评测与防护组件",
+     "tags": [
+      "LLM安全",
+      "评测"
+     ]
+    },
+    {
+     "full_name": "protectai/llm-guard",
+     "name": "llm-guard",
+     "owner": "protectai",
+     "url": "https://github.com/protectai/llm-guard",
+     "stars": 3216,
+     "language": "Python",
+     "pushed_at": "2026-07-08",
+     "desc": "The Security Toolkit for LLM Interactions",
+     "summary": "LLM 交互安全工具包，检测提示注入、越狱与敏感信息",
+     "tags": [
+      "LLM防护",
+      "检测"
+     ]
+    },
+    {
+     "full_name": "confident-ai/deepteam",
+     "name": "deepteam",
+     "owner": "confident-ai",
+     "url": "https://github.com/confident-ai/deepteam",
+     "stars": 3020,
+     "language": "Python",
+     "pushed_at": "2026-10-01",
+     "desc": "DeepTeam is a framework to red team LLMs and AI agents.",
+     "summary": "LLM 与 AI Agent 红队测试框架，自动生成攻击用例",
+     "tags": [
+      "红队",
+      "测试"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "redteam",
+   "name": "红队 / 渗透",
+   "color": "#f87171",
+   "queries": [
+    "red team",
+    "penetration testing"
+   ],
+   "tools": [
+    {
+     "full_name": "vxcontrol/pentagi",
+     "name": "pentagi",
+     "owner": "vxcontrol",
+     "url": "https://github.com/vxcontrol/pentagi",
+     "stars": 30531,
+     "language": "Go",
+     "pushed_at": "2026-10-09",
+     "desc": "Fully autonomous AI Agents system capable of performing complex penetration testing tasks",
+     "summary": "全自主 AI Agent 渗透测试系统，自动执行复杂攻击任务",
+     "tags": [
+      "AI渗透",
+      "自主Agent"
+     ]
+    },
+    {
+     "full_name": "GreyDGL/PentestGPT",
+     "name": "PentestGPT",
+     "owner": "GreyDGL",
+     "url": "https://github.com/GreyDGL/PentestGPT",
+     "stars": 15964,
+     "language": "Python",
+     "pushed_at": "2026-07-14",
+     "desc": "Automated Penetration Testing Agentic Framework Powered by Large Language Models",
+     "summary": "LLM 驱动的自动化渗透测试框架",
+     "tags": [
+      "LLM",
+      "自动化"
+     ]
+    },
+    {
+     "full_name": "0x4m4/hexstrike-ai",
+     "name": "hexstrike-ai",
+     "owner": "0x4m4",
+     "url": "https://github.com/0x4m4/hexstrike-ai",
+     "stars": 12819,
+     "language": "Python",
+     "pushed_at": "2026-08-03",
+     "desc": "HexStrike AI MCP Agents is an advanced MCP server that lets AI agents (Claude, GPT, Copilot, etc.) autonomously run 150+ cybersecurity tools for automated pentesting, vulnerability discovery, bug bounty automation, and security research. Seamlessly bridge LLMs with real-world offensive security capabilities.",
+     "summary": "MCP 服务器，让 AI Agent 直接调用大量渗透工具",
+     "tags": [
+      "MCP",
+      "AI渗透"
+     ]
+    },
+    {
+     "full_name": "redcanaryco/atomic-red-team",
+     "name": "atomic-red-team",
+     "owner": "redcanaryco",
+     "url": "https://github.com/redcanaryco/atomic-red-team",
+     "stars": 12679,
+     "language": "C",
+     "pushed_at": "2026-10-16",
+     "desc": "Small and highly portable detection tests based on MITRE's ATT&CK.",
+     "summary": "基于 MITRE ATT&CK 的原子化检测测试用例集",
+     "tags": [
+      "ATT&CK",
+      "检测验证"
+     ]
+    },
+    {
+     "full_name": "Manisso/fsociety",
+     "name": "fsociety",
+     "owner": "Manisso",
+     "url": "https://github.com/Manisso/fsociety",
+     "stars": 12340,
+     "language": "Python",
+     "pushed_at": "2026-07-21",
+     "desc": "fsociety Hacking Tools Pack – A Penetration Testing Framework",
+     "summary": "渗透测试工具包，集成多种常见攻击工具",
+     "tags": [
+      "工具包"
+     ]
+    },
+    {
+     "full_name": "1N3/Sn1per",
+     "name": "Sn1per",
+     "owner": "1N3",
+     "url": "https://github.com/1N3/Sn1per",
+     "stars": 11447,
+     "language": "Shell",
+     "pushed_at": "2026-07-04",
+     "desc": "Automated penetration testing & attack surface management platform. Recon, scan, exploit, report - 600+ exploits, 90+ integrations, 10K+ detections.",
+     "summary": "自动化渗透测试与攻击面管理平台，侦察到报告全流程",
+     "tags": [
+      "攻击面",
+      "自动化"
+     ]
+    },
+    {
+     "full_name": "infosecn1nja/Red-Teaming-Toolkit",
+     "name": "Red-Teaming-Toolkit",
+     "owner": "infosecn1nja",
+     "url": "https://github.com/infosecn1nja/Red-Teaming-Toolkit",
+     "stars": 10782,
+     "language": null,
+     "pushed_at": "2026-05-07",
+     "desc": "This repository contains cutting-edge open-source security tools (OST) for a red teamer and threat hunter.",
+     "summary": "红队与威胁模拟精选工具集",
+     "tags": [
+      "工具集"
+     ]
+    },
+    {
+     "full_name": "samratashok/nishang",
+     "name": "nishang",
+     "owner": "samratashok",
+     "url": "https://github.com/samratashok/nishang",
+     "stars": 10152,
+     "language": "PowerShell",
+     "pushed_at": "2024-04-25",
+     "desc": "Nishang - Offensive PowerShell for red team, penetration testing and offensive security.",
+     "summary": "攻击性 PowerShell 脚本集，用于红队与渗透测试",
+     "tags": [
+      "PowerShell",
+      "后渗透"
+     ]
+    },
+    {
+     "full_name": "j3ssie/osmedeus",
+     "name": "osmedeus",
+     "owner": "j3ssie",
+     "url": "https://github.com/j3ssie/osmedeus",
+     "stars": 6601,
+     "language": "Go",
+     "pushed_at": "2026-10-04",
+     "desc": "A Modern Orchestration Engine for Security",
+     "summary": "现代化安全编排引擎，自动化侦察与漏洞赏金流程",
+     "tags": [
+      "编排",
+      "侦察"
+     ]
+    },
+    {
+     "full_name": "BitterSecurity/Decepticon",
+     "name": "Decepticon",
+     "owner": "BitterSecurity",
+     "url": "https://github.com/BitterSecurity/Decepticon",
+     "stars": 6150,
+     "language": "Python",
+     "pushed_at": "2026-10-16",
+     "desc": "Autonomous Hacking Agent for Red Team",
+     "summary": "面向红队的自主黑客 Agent",
+     "tags": [
+      "AI渗透",
+      "自主Agent"
+     ]
+    },
+    {
+     "full_name": "FunnyWolf/Viper",
+     "name": "Viper",
+     "owner": "FunnyWolf",
+     "url": "https://github.com/FunnyWolf/Viper",
+     "stars": 5327,
+     "language": null,
+     "pushed_at": "2026-05-31",
+     "desc": "Adversary simulation and Red teaming platform with AI",
+     "summary": "带 AI 能力的对手模拟与红队作战平台",
+     "tags": [
+      "红队平台",
+      "C2"
+     ]
+    },
+    {
+     "full_name": "GH05TCREW/pentestagent",
+     "name": "pentestagent",
+     "owner": "GH05TCREW",
+     "url": "https://github.com/GH05TCREW/pentestagent",
+     "stars": 3185,
+     "language": "Python",
+     "pushed_at": "2026-10-12",
+     "desc": "PentestAgent is an AI agent framework for black-box security testing, supporting bug bounty, red-team, and penetration testing workflows.",
+     "summary": "黑盒安全测试 AI Agent 框架，面向漏洞赏金场景",
+     "tags": [
+      "AI渗透",
+      "黑盒"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ics-iot",
+   "name": "工控 / IoT 安全",
+   "color": "#fbbf24",
+   "queries": [
+    "ics security",
+    "scada",
+    "plc exploitation",
+    "modbus security"
+   ],
+   "tools": [
+    {
+     "full_name": "ITI/ICS-Security-Tools",
+     "name": "ICS-Security-Tools",
+     "owner": "ITI",
+     "url": "https://github.com/ITI/ICS-Security-Tools",
+     "stars": 2063,
+     "language": "HTML",
+     "pushed_at": "2025-04-15",
+     "desc": "Tools, tips, tricks, and more for exploring ICS Security.",
+     "summary": "ICS 安全工具、技巧与资源集合",
+     "tags": [
+      "工具集"
+     ]
+    },
+    {
+     "full_name": "mushorg/conpot",
+     "name": "conpot",
+     "owner": "mushorg",
+     "url": "https://github.com/mushorg/conpot",
+     "stars": 1531,
+     "language": "Python",
+     "pushed_at": "2026-10-12",
+     "desc": "ICS/SCADA honeypot",
+     "summary": "ICS / SCADA 蜜罐，模拟工控协议诱捕攻击行为",
+     "tags": [
+      "蜜罐",
+      "工控协议"
+     ]
+    },
+    {
+     "full_name": "dark-lbp/isf",
+     "name": "isf",
+     "owner": "dark-lbp",
+     "url": "https://github.com/dark-lbp/isf",
+     "stars": 1109,
+     "language": "Python",
+     "pushed_at": "2024-01-04",
+     "desc": "ISF(Industrial Control System Exploitation Framework)，a exploitation framework based on Python",
+     "summary": "ISF 工控漏洞利用框架，基于 Python 的工控渗透工具",
+     "tags": [
+      "利用框架",
+      "工控"
+     ]
+    },
+    {
+     "full_name": "nsacyber/GRASSMARLIN",
+     "name": "GRASSMARLIN",
+     "owner": "nsacyber",
+     "url": "https://github.com/nsacyber/GRASSMARLIN",
+     "stars": 1061,
+     "language": "Java",
+     "pushed_at": "2020-02-24",
+     "desc": "Provides situational awareness of Industrial Control Systems (ICS) and Supervisory Control and Data Acquisition (SCADA) networks in support of network security assessments. #nsacyber",
+     "summary": "NSA 开源的 ICS / SCADA 网络态势感知工具",
+     "tags": [
+      "态势感知",
+      "NSA"
+     ]
+    },
+    {
+     "full_name": "zakharb/labshock",
+     "name": "labshock",
+     "owner": "zakharb",
+     "url": "https://github.com/zakharb/labshock",
+     "stars": 799,
+     "language": "Shell",
+     "pushed_at": "2026-05-28",
+     "desc": "OT Security Lab for ICS networks",
+     "summary": "ICS 网络 OT 安全实验环境",
+     "tags": [
+      "实验环境"
+     ]
+    },
+    {
+     "full_name": "kh4sh3i/ICS-Pentesting-Tools",
+     "name": "ICS-Pentesting-Tools",
+     "owner": "kh4sh3i",
+     "url": "https://github.com/kh4sh3i/ICS-Pentesting-Tools",
+     "stars": 362,
+     "language": null,
+     "pushed_at": "2021-11-01",
+     "desc": "A curated list of tools related to Industrial Control System (ICS) security and Penetration Testing",
+     "summary": "ICS 安全与渗透测试工具清单",
+     "tags": [
+      "工具清单"
+     ]
+    },
+    {
+     "full_name": "Fortiphyd/GRFICSv3",
+     "name": "GRFICSv3",
+     "owner": "Fortiphyd",
+     "url": "https://github.com/Fortiphyd/GRFICSv3",
+     "stars": 271,
+     "language": "C++",
+     "pushed_at": "2026-10-14",
+     "desc": "GRFICSv3 is a FREE and open source OT security lab with realistic networking and a 3D process simulation for training and learning ICS security",
+     "summary": "免费开源的 OT 安全实验平台，含 3D 过程仿真",
+     "tags": [
+      "仿真",
+      "实验"
+     ]
+    },
+    {
+     "full_name": "wavestone-cdt/dyode",
+     "name": "dyode",
+     "owner": "wavestone-cdt",
+     "url": "https://github.com/wavestone-cdt/dyode",
+     "stars": 196,
+     "language": "Python",
+     "pushed_at": "2023-09-02",
+     "desc": "A low-cost, DIY data diode for ICS",
+     "summary": "低成本 DIY 数据二极管，用于 ICS 单向隔离",
+     "tags": [
+      "数据二极管",
+      "隔离"
+     ]
+    },
+    {
+     "full_name": "thiagoralves/EtherSploit-IP",
+     "name": "EtherSploit-IP",
+     "owner": "thiagoralves",
+     "url": "https://github.com/thiagoralves/EtherSploit-IP",
+     "stars": 89,
+     "language": "C",
+     "pushed_at": "2020-04-24",
+     "desc": "Exploiting Allen-Bradley E/IP PLCs",
+     "summary": "针对 Allen-Bradley EtherNet/IP PLC 的漏洞利用",
+     "tags": [
+      "PLC",
+      "漏洞利用"
+     ]
+    },
+    {
+     "full_name": "aravind0x7/BusPwn",
+     "name": "BusPwn",
+     "owner": "aravind0x7",
+     "url": "https://github.com/aravind0x7/BusPwn",
+     "stars": 32,
+     "language": "Python",
+     "pushed_at": "2025-04-19",
+     "desc": "BusPwn V1.0 is a powerful Modbus hacking framework designed for testing and exploiting vulnerabilities in Modbus-based systems commonly found in Industrial Control Systems (ICS) and Operational Technology (OT).",
+     "summary": "Modbus 攻击框架，用于测试与利用 Modbus 漏洞",
+     "tags": [
+      "Modbus",
+      "攻击框架"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "hunting-dfir",
+   "name": "威胁狩猎 / DFIR",
+   "color": "#34d399",
+   "queries": [
+    "threat hunting",
+    "dfir"
+   ],
+   "tools": [
+    {
+     "full_name": "meirwah/awesome-incident-response",
+     "name": "awesome-incident-response",
+     "owner": "meirwah",
+     "url": "https://github.com/meirwah/awesome-incident-response",
+     "stars": 9455,
+     "language": null,
+     "pushed_at": "2026-10-13",
+     "desc": "A curated list of tools for incident response",
+     "summary": "应急响应工具精选清单",
+     "tags": [
+      "清单"
+     ]
+    },
+    {
+     "full_name": "LOLBAS-Project/LOLBAS",
+     "name": "LOLBAS",
+     "owner": "LOLBAS-Project",
+     "url": "https://github.com/LOLBAS-Project/LOLBAS",
+     "stars": 8873,
+     "language": "XSLT",
+     "pushed_at": "2026-09-26",
+     "desc": "Living Off The Land Binaries And Scripts - (LOLBins and LOLScripts)",
+     "summary": "生活在地攻击二进制与脚本（LOLBins / LOLScripts）知识库",
+     "tags": [
+      "LOLBins",
+      "知识库"
+     ]
+    },
+    {
+     "full_name": "zeek/zeek",
+     "name": "zeek",
+     "owner": "zeek",
+     "url": "https://github.com/zeek/zeek",
+     "stars": 8108,
+     "language": "C++",
+     "pushed_at": "2026-10-16",
+     "desc": "Zeek is a powerful network analysis framework that is much different from the typical IDS you may know.",
+     "summary": "强大的网络分析框架，用于流量监控与安全分析",
+     "tags": [
+      "流量分析",
+      "NSM"
+     ]
+    },
+    {
+     "full_name": "cugu/awesome-forensics",
+     "name": "awesome-forensics",
+     "owner": "cugu",
+     "url": "https://github.com/cugu/awesome-forensics",
+     "stars": 5216,
+     "language": null,
+     "pushed_at": "2026-09-26",
+     "desc": "⭐️ A curated list of awesome forensic analysis tools and resources",
+     "summary": "取证分析工具与资源精选清单",
+     "tags": [
+      "清单"
+     ]
+    },
+    {
+     "full_name": "clong/DetectionLab",
+     "name": "DetectionLab",
+     "owner": "clong",
+     "url": "https://github.com/clong/DetectionLab",
+     "stars": 5045,
+     "language": "HTML",
+     "pushed_at": "2024-07-06",
+     "desc": "Automate the creation of a lab environment complete with security tooling and logging best practices",
+     "summary": "一键构建含安全工具与日志最佳实践的检测实验环境",
+     "tags": [
+      "实验环境"
+     ]
+    },
+    {
+     "full_name": "Security-Onion-Solutions/securityonion",
+     "name": "securityonion",
+     "owner": "Security-Onion-Solutions",
+     "url": "https://github.com/Security-Onion-Solutions/securityonion",
+     "stars": 4931,
+     "language": "Shell",
+     "pushed_at": "2026-10-15",
+     "desc": "Security Onion is a free and open platform for threat hunting, enterprise security monitoring, and log management. It includes our own interfaces for alerting, dashboards, hunting, PCAP, detections, and case management. It also includes other tools such as osquery, CyberChef, Elasticsearch, Logstash, Kibana, Suricata, and Zeek.",
+     "summary": "免费开源的威胁狩猎与企业安全监控平台",
+     "tags": [
+      "威胁狩猎",
+      "平台"
+     ]
+    },
+    {
+     "full_name": "intelowlproject/IntelOwl",
+     "name": "IntelOwl",
+     "owner": "intelowlproject",
+     "url": "https://github.com/intelowlproject/IntelOwl",
+     "stars": 4755,
+     "language": "Python",
+     "pushed_at": "2026-10-15",
+     "desc": "IntelOwl: manage your Threat Intelligence at scale",
+     "summary": "规模化威胁情报管理与分析平台",
+     "tags": [
+      "威胁情报",
+      "平台"
+     ]
+    },
+    {
+     "full_name": "OTRF/ThreatHunter-Playbook",
+     "name": "ThreatHunter-Playbook",
+     "owner": "OTRF",
+     "url": "https://github.com/OTRF/ThreatHunter-Playbook",
+     "stars": 4689,
+     "language": "Python",
+     "pushed_at": "2026-01-12",
+     "desc": "A community-driven, open-source project to share detection logic, adversary tradecraft and resources to make detection development more efficient.",
+     "summary": "社区驱动的威胁狩猎剧本与检测逻辑库",
+     "tags": [
+      "狩猎剧本"
+     ]
+    },
+    {
+     "full_name": "alexandreborges/malwoverview",
+     "name": "malwoverview",
+     "owner": "alexandreborges",
+     "url": "https://github.com/alexandreborges/malwoverview",
+     "stars": 4132,
+     "language": "Python",
+     "pushed_at": "2026-09-22",
+     "desc": "Malwoverview is a first response tool for threat hunting across VirusTotal, Hybrid Analysis, URLHaus, Polyswarm, Malshare, Alien Vault, Malpedia, Malware Bazaar, ThreatFox, Triage, IPInfo, Shodan, AbuseIPDB, GreyNoise, URLScan.io, Whois/RDAP, NIST, and VulnCheck. Supports LLM enrichment, IOC extraction, YARA scanning, and Android analysis.",
+     "summary": "跨 VirusTotal / Hybrid Analysis 等平台的首响应狩猎工具",
+     "tags": [
+      "首响应",
+      "情报聚合"
+     ]
+    },
+    {
+     "full_name": "Neo23x0/Loki",
+     "name": "Loki",
+     "owner": "Neo23x0",
+     "url": "https://github.com/Neo23x0/Loki",
+     "stars": 3800,
+     "language": "Python",
+     "pushed_at": "2026-01-12",
+     "desc": "Loki - Simple IOC and YARA Scanner",
+     "summary": "简易 IOC 与 YARA 扫描器，用于端点威胁排查",
+     "tags": [
+      "IOC",
+      "YARA"
+     ]
+    },
+    {
+     "full_name": "WithSecureOpenSource/chainsaw",
+     "name": "chainsaw",
+     "owner": "WithSecureOpenSource",
+     "url": "https://github.com/WithSecureOpenSource/chainsaw",
+     "stars": 3691,
+     "language": "Rust",
+     "pushed_at": "2026-10-14",
+     "desc": "Rapidly Search and Hunt through Windows Forensic Artefacts",
+     "summary": "快速检索与狩猎 Windows 取证痕迹（EVTX 等）",
+     "tags": [
+      "Windows取证",
+      "EVTX"
+     ]
+    },
+    {
+     "full_name": "google/timesketch",
+     "name": "timesketch",
+     "owner": "google",
+     "url": "https://github.com/google/timesketch",
+     "stars": 3436,
+     "language": "Python",
+     "pushed_at": "2026-10-14",
+     "desc": "Collaborative forensic timeline analysis",
+     "summary": "协同式取证时间线分析平台",
+     "tags": [
+      "时间线",
+      "取证"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cloud-container",
+   "name": "云 / 容器安全",
+   "color": "#38bdf8",
+   "queries": [
+    "kubernetes security",
+    "cloud security"
+   ],
+   "tools": [
+    {
+     "full_name": "aquasecurity/trivy",
+     "name": "trivy",
+     "owner": "aquasecurity",
+     "url": "https://github.com/aquasecurity/trivy",
+     "stars": 38448,
+     "language": "Go",
+     "pushed_at": "2026-10-15",
+     "desc": "Find vulnerabilities, misconfigurations, secrets, SBOM in containers, Kubernetes, code repositories, clouds and more",
+     "summary": "容器 / K8s / 代码仓库的漏洞、配置与密钥一体化扫描器",
+     "tags": [
+      "镜像扫描",
+      "综合"
+     ]
+    },
+    {
+     "full_name": "projectdiscovery/nuclei",
+     "name": "nuclei",
+     "owner": "projectdiscovery",
+     "url": "https://github.com/projectdiscovery/nuclei",
+     "stars": 32057,
+     "language": "Go",
+     "pushed_at": "2026-10-15",
+     "desc": "Nuclei is a fast, customizable vulnerability scanner powered by the global security community and built on a simple YAML-based DSL, enabling collaboration to tackle trending vulnerabilities on the internet. It helps you find vulnerabilities in your applications, APIs, networks, DNS, and cloud configurations.",
+     "summary": "基于模板的快速漏洞扫描器，社区模板生态庞大",
+     "tags": [
+      "漏洞扫描",
+      "模板"
+     ]
+    },
+    {
+     "full_name": "Infisical/infisical",
+     "name": "infisical",
+     "owner": "Infisical",
+     "url": "https://github.com/Infisical/infisical",
+     "stars": 29789,
+     "language": "TypeScript",
+     "pushed_at": "2026-10-16",
+     "desc": "Infisical is the open-source platform for securing secrets, certificates, access, and AI Agents.",
+     "summary": "开源密钥、证书与访问管理平台，覆盖 AI Agent 凭据",
+     "tags": [
+      "密钥管理"
+     ]
+    },
+    {
+     "full_name": "authelia/authelia",
+     "name": "authelia",
+     "owner": "authelia",
+     "url": "https://github.com/authelia/authelia",
+     "stars": 29277,
+     "language": "Go",
+     "pushed_at": "2026-10-16",
+     "desc": "The Single Sign-On Multi-Factor portal for web apps. OpenID Certified™ and Post-Quantum Cryptography Ready.",
+     "summary": "Web 应用单点登录与多因素认证门户",
+     "tags": [
+      "SSO",
+      "MFA"
+     ]
+    },
+    {
+     "full_name": "cilium/cilium",
+     "name": "cilium",
+     "owner": "cilium",
+     "url": "https://github.com/cilium/cilium",
+     "stars": 25664,
+     "language": "Go",
+     "pushed_at": "2026-10-16",
+     "desc": "eBPF-based Networking, Security, and Observability",
+     "summary": "基于 eBPF 的网络、安全与可观测性平台",
+     "tags": [
+      "eBPF",
+      "网络"
+     ]
+    },
+    {
+     "full_name": "gravitational/teleport",
+     "name": "teleport",
+     "owner": "gravitational",
+     "url": "https://github.com/gravitational/teleport",
+     "stars": 20997,
+     "language": "Go",
+     "pushed_at": "2026-09-17",
+     "desc": "The easiest, and most secure way to access and protect all of your infrastructure.",
+     "summary": "统一基础设施访问与防护平台（SSH / K8s / DB）",
+     "tags": [
+      "访问控制",
+      "零信任"
+     ]
+    },
+    {
+     "full_name": "wazuh/wazuh",
+     "name": "wazuh",
+     "owner": "wazuh",
+     "url": "https://github.com/wazuh/wazuh",
+     "stars": 17278,
+     "language": "C++",
+     "pushed_at": "2026-10-16",
+     "desc": "Wazuh - The Open Source Security Platform. Unified XDR and SIEM protection for endpoints and cloud workloads.",
+     "summary": "开源 XDR / SIEM 平台，统一端点与云工作负载防护",
+     "tags": [
+      "XDR",
+      "SIEM"
+     ]
+    },
+    {
+     "full_name": "cryptomator/cryptomator",
+     "name": "cryptomator",
+     "owner": "cryptomator",
+     "url": "https://github.com/cryptomator/cryptomator",
+     "stars": 16314,
+     "language": "Java",
+     "pushed_at": "2026-10-15",
+     "desc": "Cryptomator for Windows, macOS, and Linux: Secure client-side encryption for your cloud storage, ensuring privacy and control over your data.",
+     "summary": "云存储客户端加密工具，端到端保护云上文件",
+     "tags": [
+      "加密",
+      "云存储"
+     ]
+    },
+    {
+     "full_name": "crowdsecurity/crowdsec",
+     "name": "crowdsec",
+     "owner": "crowdsecurity",
+     "url": "https://github.com/crowdsecurity/crowdsec",
+     "stars": 15191,
+     "language": "Go",
+     "pushed_at": "2026-10-15",
+     "desc": "Open-source IDS/IPS, WAF and bot detection for Linux, Windows, Docker and Kubernetes, with a crowdsourced blocklist of malicious IPs.",
+     "summary": "开源 IDS/IPS、WAF 与爬虫检测，支持 Linux / 容器 / K8s",
+     "tags": [
+      "IDS",
+      "行为检测"
+     ]
+    },
+    {
+     "full_name": "prowler-cloud/prowler",
+     "name": "prowler",
+     "owner": "prowler-cloud",
+     "url": "https://github.com/prowler-cloud/prowler",
+     "stars": 15038,
+     "language": "Python",
+     "pushed_at": "2026-10-15",
+     "desc": "Prowler is the world’s most widely used open-source cloud security platform that automates security and compliance across any cloud environment.",
+     "summary": "广泛使用的开源云安全平台，自动化云配置审计",
+     "tags": [
+      "云审计",
+      "合规"
+     ]
+    },
+    {
+     "full_name": "OpenNHP/opennhp",
+     "name": "opennhp",
+     "owner": "OpenNHP",
+     "url": "https://github.com/OpenNHP/opennhp",
+     "stars": 13938,
+     "language": "Go",
+     "pushed_at": "2026-10-15",
+     "desc": "A lightweight, cryptography-powered, open-source toolkit built to enforce Zero Trust security for infrastructure, applications, and data in the AI-driven world.",
+     "summary": "轻量级密码学零信任安全工具包（网络隐藏协议）",
+     "tags": [
+      "零信任"
+     ]
+    },
+    {
+     "full_name": "kubescape/kubescape",
+     "name": "kubescape",
+     "owner": "kubescape",
+     "url": "https://github.com/kubescape/kubescape",
+     "stars": 11803,
+     "language": "Go",
+     "pushed_at": "2026-10-15",
+     "desc": "Kubescape is an open-source Kubernetes security platform for your IDE, CI/CD pipelines, and clusters. It includes risk analysis, security, compliance, and misconfiguration scanning, saving Kubernetes users and administrators precious time, effort, and resources.",
+     "summary": "Kubernetes 安全平台，覆盖 IDE、CI/CD 与集群",
+     "tags": [
+      "K8s",
+      "合规"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "code-audit",
+   "name": "代码审计 / 密钥检测",
+   "color": "#f472b6",
+   "queries": [
+    "sast",
+    "secret scanning"
+   ],
+   "tools": [
+    {
+     "full_name": "trufflesecurity/trufflehog",
+     "name": "trufflehog",
+     "owner": "trufflesecurity",
+     "url": "https://github.com/trufflesecurity/trufflehog",
+     "stars": 28530,
+     "language": "Go",
+     "pushed_at": "2026-10-15",
+     "desc": "Find, verify, and analyze leaked credentials",
+     "summary": "发现、验证并分析泄漏凭据的密钥扫描器",
+     "tags": [
+      "密钥扫描",
+      "验证"
+     ]
+    },
+    {
+     "full_name": "semgrep/semgrep",
+     "name": "semgrep",
+     "owner": "semgrep",
+     "url": "https://github.com/semgrep/semgrep",
+     "stars": 17078,
+     "language": "C",
+     "pushed_at": "2026-10-16",
+     "desc": "Lightweight static analysis for many languages. Find bug variants with patterns that look like source code.",
+     "summary": "轻量级多语言静态分析（SAST），用类代码模式查找漏洞",
+     "tags": [
+      "SAST",
+      "静态分析"
+     ]
+    },
+    {
+     "full_name": "lintsinghua/DeepAudit",
+     "name": "DeepAudit",
+     "owner": "lintsinghua",
+     "url": "https://github.com/lintsinghua/DeepAudit",
+     "stars": 7168,
+     "language": "Python",
+     "pushed_at": "2026-10-01",
+     "desc": "DeepAudit：人人拥有的 AI 黑客战队，让漏洞挖掘触手可及。小白一键部署运行，自主协作审计 + 自动化沙箱 PoC 验证。支持 Ollama 私有部署 ，一键生成报告。支持中转站。​让安全不再昂贵，让审计不再复杂。",
+     "summary": "AI 代码审计系统，自主协作审计 + 沙箱 PoC 验证",
+     "tags": [
+      "AI审计",
+      "PoC"
+     ]
+    },
+    {
+     "full_name": "dwisiswant0/apkleaks",
+     "name": "apkleaks",
+     "owner": "dwisiswant0",
+     "url": "https://github.com/dwisiswant0/apkleaks",
+     "stars": 6353,
+     "language": "Python",
+     "pushed_at": "2025-08-20",
+     "desc": "Scanning APK file for URIs, endpoints & secrets.",
+     "summary": "扫描 APK 中的 URI、端点与密钥",
+     "tags": [
+      "移动安全",
+      "密钥"
+     ]
+    },
+    {
+     "full_name": "tenable/terrascan",
+     "name": "terrascan",
+     "owner": "tenable",
+     "url": "https://github.com/tenable/terrascan",
+     "stars": 5212,
+     "language": "Go",
+     "pushed_at": "2025-11-20",
+     "desc": "Detect compliance and security violations across Infrastructure as Code to mitigate risk before provisioning cloud native infrastructure.",
+     "summary": "IaC 合规与安全违规检测，部署前拦截风险",
+     "tags": [
+      "IaC",
+      "合规"
+     ]
+    },
+    {
+     "full_name": "edoardottt/cariddi",
+     "name": "cariddi",
+     "owner": "edoardottt",
+     "url": "https://github.com/edoardottt/cariddi",
+     "stars": 3790,
+     "language": "Go",
+     "pushed_at": "2026-10-13",
+     "desc": "Take a list of domains, crawl urls and scan for endpoints, secrets, api keys, file extensions, tokens and more",
+     "summary": "域名爬取 + 端点 / 密钥 / API Key 泄露扫描",
+     "tags": [
+      "侦察",
+      "密钥"
+     ]
+    },
+    {
+     "full_name": "Bearer/bearer",
+     "name": "bearer",
+     "owner": "Bearer",
+     "url": "https://github.com/Bearer/bearer",
+     "stars": 2758,
+     "language": "Go",
+     "pushed_at": "2026-10-12",
+     "desc": "Code security scanning tool (SAST) to discover, filter and prioritize security and privacy risks.",
+     "summary": "代码安全扫描（SAST），按优先级排序安全与隐私风险",
+     "tags": [
+      "SAST",
+      "隐私"
+     ]
+    },
+    {
+     "full_name": "ajinabraham/nodejsscan",
+     "name": "nodejsscan",
+     "owner": "ajinabraham",
+     "url": "https://github.com/ajinabraham/nodejsscan",
+     "stars": 2577,
+     "language": "CSS",
+     "pushed_at": "2026-09-21",
+     "desc": "nodejsscan is a static security code scanner for Node.js applications.",
+     "summary": "Node.js 应用静态安全代码扫描器",
+     "tags": [
+      "Node.js",
+      "SAST"
+     ]
+    },
+    {
+     "full_name": "google/mantis",
+     "name": "mantis",
+     "owner": "google",
+     "url": "https://github.com/google/mantis",
+     "stars": 2452,
+     "language": "Python",
+     "pushed_at": "2026-10-16",
+     "desc": "A modular, stack-agnostic toolkit for AI coding agents to autonomously find, reproduce, and patch vulnerabilities.",
+     "summary": "模块化 AI 代码审计工具包，自主发现、复现与修复漏洞",
+     "tags": [
+      "AI审计",
+      "自动化"
+     ]
+    },
+    {
+     "full_name": "betterleaks/betterleaks",
+     "name": "betterleaks",
+     "owner": "betterleaks",
+     "url": "https://github.com/betterleaks/betterleaks",
+     "stars": 2238,
+     "language": "Go",
+     "pushed_at": "2026-10-15",
+     "desc": "Find leaked secrets everywhere.",
+     "summary": "跨代码托管平台发现泄漏密钥",
+     "tags": [
+      "密钥扫描"
+     ]
+    },
+    {
+     "full_name": "hannob/snallygaster",
+     "name": "snallygaster",
+     "owner": "hannob",
+     "url": "https://github.com/hannob/snallygaster",
+     "stars": 2114,
+     "language": "Python",
+     "pushed_at": "2026-10-14",
+     "desc": "Tool to scan for secret files on HTTP servers",
+     "summary": "扫描服务器上的敏感文件与备份文件泄露",
+     "tags": [
+      "信息泄露",
+      "Web"
+     ]
+    },
+    {
+     "full_name": "GitGuardian/ggshield",
+     "name": "ggshield",
+     "owner": "GitGuardian",
+     "url": "https://github.com/GitGuardian/ggshield",
+     "stars": 2006,
+     "language": "Python",
+     "pushed_at": "2026-10-15",
+     "desc": "Detect and validate 500+ types of hardcoded secrets with advanced checks. Use it as a pre-commit hook, GitHub Action, or CLI for proactive secret detection and security.",
+     "summary": "检测并验证 500+ 类硬编码密钥，可作 pre-commit 钩子",
+     "tags": [
+      "密钥检测",
+      "CI"
+     ]
+    }
+   ]
+  }
+ ]
+}

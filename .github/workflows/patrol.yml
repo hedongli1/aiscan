@@ -129,9 +129,26 @@ jobs:
           "
           # 只保留最近 30 天
           ls docs/history/*.json | sort | head -n -30 | xargs -r rm
+          # 生成面板索引（docs/data/patrol-index.json），供 docs/index.html 直接读取巡检统计
+          node -e "
+            const fs = require('fs');
+            const dir = 'docs/history';
+            const files = fs.readdirSync(dir).filter(f => /^\\d{4}-\\d{2}-\\d{2}\\.json$/.test(f)).sort();
+            const days = files.map(f => {
+              try {
+                const j = JSON.parse(fs.readFileSync(dir + '/' + f, 'utf8'));
+                const r = j.report || {};
+                return { date: j.date || f.slice(0, 10), scanned: r.scanned || 0, clean: r.cleanRepos || 0,
+                         flagged: (r.flaggedRepos || []).length, issues: r.issuesOpened || 0, errors: (r.errors || []).length };
+              } catch (e) { return null; }
+            }).filter(Boolean);
+            fs.mkdirSync('docs/data', { recursive: true });
+            fs.writeFileSync('docs/data/patrol-index.json', JSON.stringify({ updatedAt: new Date().toISOString(), days }, null, 2));
+            console.log('已写入 docs/data/patrol-index.json，共 ' + days.length + ' 天');
+          "
           git config user.name "aiscan-patrol-bot"
           git config user.email "hedongli1@users.noreply.github.com"
-          git add docs/history/
+          git add docs/
           git diff --cached --quiet || (git commit -m "chore(patrol): ${DATE} 巡检结果 [skip ci]" && git push)
           echo "面板数据已更新"
 
