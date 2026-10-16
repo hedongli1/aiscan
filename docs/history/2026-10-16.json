@@ -1,0 +1,539 @@
+{
+  "date": "2026-10-16",
+  "generatedAt": "2026-10-16T19:45:20.924Z",
+  "report": {
+    "scanned": 5,
+    "cleanRepos": 1,
+    "flaggedRepos": [
+      {
+        "repo": "pure-css/pure",
+        "findings": 9,
+        "summary": {
+          "total": 23,
+          "counts": {
+            "critical": 0,
+            "high": 9,
+            "medium": 11,
+            "low": 3,
+            "info": 0
+          },
+          "byCategory": {
+            "supply-chain": 3,
+            "injection": 3,
+            "xss": 1,
+            "secret": 16
+          },
+          "securityScore": 0,
+          "grade": "F"
+        },
+        "detail": [
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "scripts/util.mjs",
+            "line": 17,
+            "col": 22,
+            "snippet": "const contents = readFileSync(file, 'utf8'); return contents.charCodeAt(0) === 0xFEFF ? contents.slice(1) : contents; } /** Writes a",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "scripts/util.mjs",
+            "line": 24,
+            "col": 5,
+            "snippet": "rsive: true }); writeFileSync(file, contents); } /** * Returns the files matching `pattern`, sorted for deterministic output. * Uses",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "XSS-REACT-DANGEROUS",
+            "severity": "high",
+            "category": "xss",
+            "title": "React dangerouslySetInnerHTML",
+            "message": "dangerouslySetInnerHTML 渲染不可信内容",
+            "file": "site/components/Example.js",
+            "line": 12,
+            "col": 18,
+            "snippet": "/} <div dang…L=（已脱敏，原文 24 字符）{{ __html: markup }} /> <CodeBlock>{markup}</CodeBlock> </div> ); } exp",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "site/lib/pure.js",
+            "line": 10,
+            "col": 20,
+            "snippet": "const pureMin = fs.readFileSync(path.resolve(pureFiles, 'pure-min.css'), 'utf8'); // use pure-min.css to determine site integrity hash con",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "SECRET-GENERIC-TOKEN",
+            "severity": "high",
+            "category": "secret",
+            "title": "疑似高熵 Token / 密钥",
+            "message": "检测到高熵令牌（熵 4.77，置信度 81%）",
+            "file": "site/src/theme/Layout.js",
+            "line": 83,
+            "col": 64,
+            "snippet": "ification\" content=\"4Vwl…OY（已脱敏，原文 43 字符）\" /> <link rel=\"styl",
+            "confidence": 81,
+            "heuristic": true
+          },
+          {
+            "ruleId": "SECRET-GENERIC-TOKEN",
+            "severity": "high",
+            "category": "secret",
+            "title": "疑似高熵 Token / 密钥",
+            "message": "检测到高熵令牌（熵 5.52，置信度 100%）",
+            "file": "site/static/layouts/gallery/index.html",
+            "line": 65,
+            "col": 25,
+            "snippet": "href=\"https://www.flickr.com/…3f（已脱敏，原文 67 字符）",
+            "confidence": 100,
+            "heuristic": true
+          },
+          {
+            "ruleId": "SECRET-GENERIC-TOKEN",
+            "severity": "high",
+            "category": "secret",
+            "title": "疑似高熵 Token / 密钥",
+            "message": "检测到高熵令牌（熵 5.52，置信度 100%）",
+            "file": "site/static/layouts/gallery/index.html",
+            "line": 77,
+            "col": 29,
+            "snippet": "href=\"https://www.flickr.com/…3f（已脱敏，原文 67 字符）",
+            "confidence": 100,
+            "heuristic": true
+          },
+          {
+            "ruleId": "SECRET-GENERIC-TOKEN",
+            "severity": "high",
+            "category": "secret",
+            "title": "疑似高熵 Token / 密钥",
+            "message": "检测到高熵令牌（熵 5.5，置信度 100%）",
+            "file": "site/static/layouts/gallery/index.html",
+            "line": 135,
+            "col": 58,
+            "snippet": "com/…20（已脱敏，原文 19 字符）@N05/…d4（已脱敏，原文 80 字符）",
+            "confidence": 100,
+            "heuristic": true
+          },
+          {
+            "ruleId": "SECRET-GENERIC-TOKEN",
+            "severity": "high",
+            "category": "secret",
+            "title": "疑似高熵 Token / 密钥",
+            "message": "检测到高熵令牌（熵 5.5，置信度 100%）",
+            "file": "site/static/layouts/gallery/index.html",
+            "line": 147,
+            "col": 62,
+            "snippet": "com/…20（已脱敏，原文 19 字符）@N05/…d4（已脱敏，原文 80 字符）",
+            "confidence": 100,
+            "heuristic": true
+          }
+        ]
+      },
+      {
+        "repo": "copy/v86",
+        "findings": 11,
+        "summary": {
+          "total": 63,
+          "counts": {
+            "critical": 0,
+            "high": 11,
+            "medium": 35,
+            "low": 17,
+            "info": 0
+          },
+          "byCategory": {
+            "ssrf": 4,
+            "xss": 2,
+            "secret": 54,
+            "crypto": 1,
+            "injection": 2
+          },
+          "securityScore": 0,
+          "grade": "F"
+        },
+        "detail": [
+          {
+            "ruleId": "INJ-SSRF",
+            "severity": "high",
+            "category": "ssrf",
+            "title": "SSRF：服务端请求用户可控 URL",
+            "message": "请求目标来自用户输入，存在 SSRF 风险",
+            "file": "src/browser/fake_network.js",
+            "line": 363,
+            "col": 5,
+            "snippet": "udp.data }; fetch(fetch_url, fetch_opts).then(async (resp) => { const reply = { eth: { ethertype",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-SSRF",
+            "severity": "high",
+            "category": "ssrf",
+            "title": "SSRF：服务端请求用户可控 URL",
+            "message": "请求目标来自用户输入，存在 SSRF 风险",
+            "file": "src/browser/fetch_network.js",
+            "line": 286,
+            "col": 14,
+            "snippet": "}; conn.net.fetch(fetch_url, opts).then(handler) .catch((e) => { console.warn(\"Fetch Failed: \" + fetch_url + \"\\n\" + e);",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-SSRF",
+            "severity": "high",
+            "category": "ssrf",
+            "title": "SSRF：服务端请求用户可控 URL",
+            "message": "请求目标来自用户输入，存在 SSRF 风险",
+            "file": "src/browser/fetch_network.js",
+            "line": 303,
+            "col": 28,
+            "snippet": "const resp = await fetch(url, options); const ab = await resp.arrayBuffer(); return [resp, ab]; } catch(e) {",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "XSS-INNERHTML",
+            "severity": "high",
+            "category": "xss",
+            "title": "DOM XSS：innerHTML / document.write 写入不可信数据",
+            "message": "用户输入直接写入 DOM，存在 XSS 风险",
+            "file": "src/browser/main.js",
+            "line": 3289,
+            "col": 15,
+            "snippet": "(\"\"); w.document.write(image.outerHTML); } catch(e) {} $(\"take_screenshot\").blur(); }; if(emula",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "XSS-JQUERY-HTML",
+            "severity": "high",
+            "category": "xss",
+            "title": "jQuery .html()/append() 注入不可信内容",
+            "message": "jQuery 插入用户内容存在 DOM XSS",
+            "file": "src/browser/main.js",
+            "line": 2118,
+            "col": 13,
+            "snippet": "blank\"; $(\"description\").append(document.createTextNode(\"Running \"), link); } } if(query_args) { //",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "GL-generic-api-key",
+            "severity": "high",
+            "category": "secret",
+            "title": "疑似泄漏：generic-api-key",
+            "message": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+            "file": "src/browser/starter.js",
+            "line": 1228,
+            "col": 1,
+            "snippet": "= enabled; } }; V86.prototype.keyb…us（已脱敏，原文 19 字符） = V86.prototype.keyb…ed（已脱敏，原文 20 字符）; /** * Send a string to the first emulated seri",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "SECRET-GENERIC-TOKEN",
+            "severity": "high",
+            "category": "secret",
+            "title": "疑似高熵 Token / 密钥",
+            "message": "检测到高熵令牌（熵 4.8，置信度 88%）",
+            "file": "src/ide.js",
+            "line": 40,
+            "col": 12,
+            "snippet": "2, 1994) // https://dn790009.ca.archive.org/…0_（已脱敏，原文 56 字符）%2",
+            "confidence": 88,
+            "heuristic": true
+          },
+          {
+            "ruleId": "SECRET-GENERIC-TOKEN",
+            "severity": "high",
+            "category": "secret",
+            "title": "疑似高熵 Token / 密钥",
+            "message": "检测到高熵令牌（熵 4.58，置信度 81%）",
+            "file": "src/ide.js",
+            "line": 2625,
+            "col": 16,
+            "snippet": "n 4c // https://dn790009.ca.archive.org/…/A（已脱敏，原文 58 字符）",
+            "confidence": 81,
+            "heuristic": true
+          },
+          {
+            "ruleId": "INJ-SSRF",
+            "severity": "high",
+            "category": "ssrf",
+            "title": "SSRF：服务端请求用户可控 URL",
+            "message": "请求目标来自用户输入，存在 SSRF 风险",
+            "file": "tests/kvm-unit-tests/x86/nx.c",
+            "line": 110,
+            "col": 9,
+            "snippet": "00000; i++) fetch(target); check_access(\"compiled executable alias does not bypass NX\", fetch, ALIAS, 0x11); check_access(\"N",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "tests/nasm/create_tests.js",
+            "line": 36,
+            "col": 19,
+            "snippet": "const header = fs.readFileSync(path.join(__dirname, \"header.inc\")); const footer = fs.readFileSync(path.join(__dirname, \"footer.inc\")); m",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "tests/nasm/create_tests.js",
+            "line": 37,
+            "col": 19,
+            "snippet": "; const footer = fs.readFileSync(path.join(__dirname, \"footer.inc\")); main(); async function main() { try { fs.mkdirSync(B",
+            "confidence": 92,
+            "heuristic": false
+          }
+        ]
+      },
+      {
+        "repo": "mochajs/mocha",
+        "findings": 11,
+        "summary": {
+          "total": 38,
+          "counts": {
+            "critical": 0,
+            "high": 11,
+            "medium": 21,
+            "low": 6,
+            "info": 0
+          },
+          "byCategory": {
+            "secret": 23,
+            "ssrf": 2,
+            "supply-chain": 4,
+            "xss": 2,
+            "injection": 7
+          },
+          "securityScore": 0,
+          "grade": "F"
+        },
+        "detail": [
+          {
+            "ruleId": "INJ-SSRF",
+            "severity": "high",
+            "category": "ssrf",
+            "title": "SSRF：服务端请求用户可控 URL",
+            "message": "请求目标来自用户输入，存在 SSRF 风险",
+            "file": "docs/_data/supporters.cjs",
+            "line": 111,
+            "col": 32,
+            "snippet": "st response = await fetch(url, { signal: AbortSignal.timeout(30000), }); if (response.headers.get(\"content-type\")?",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-SSRF",
+            "severity": "high",
+            "category": "ssrf",
+            "title": "SSRF：服务端请求用户可控 URL",
+            "message": "请求目标来自用户输入，存在 SSRF 风险",
+            "file": "docs/_data/supporters.cjs",
+            "line": 146,
+            "col": 28,
+            "snippet": "st response = await fetch(API_ENDPOINT, { method: \"POST\", headers: { \"Content-Type\": \"appl…on（已脱敏，原文 16 字符）\" }, body: JSON.stri",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "XSS-INNERHTML",
+            "severity": "high",
+            "category": "xss",
+            "title": "DOM XSS：innerHTML / document.write 写入不可信数据",
+            "message": "用户输入直接写入 DOM，存在 XSS 风险",
+            "file": "lib/browser/highlight-tags.js",
+            "line": 35,
+            "col": 13,
+            "snippet": "++i) { code[i].innerHTML = highlight(code[i].innerHTML); } }",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "lib/cli/init.js",
+            "line": 27,
+            "col": 18,
+            "snippet": "); const css = fs.readFileSync(path.join(srcdir, \"mocha.css\")); const js = fs.readFileSync(path.join(srcdir, \"mocha.js\")); const tmpl",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "lib/cli/init.js",
+            "line": 28,
+            "col": 17,
+            "snippet": ")); const js = fs.readFileSync(path.join(srcdir, \"mocha.js\")); const tmpl = fs.readFileSync( path.join(srcdir, \"lib\", \"browser\", \"te",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "lib/cli/init.js",
+            "line": 29,
+            "col": 19,
+            "snippet": "; const tmpl = fs.readFileSync( path.join(srcdir, \"lib\", \"browser\", \"template.html\"), ); fs.writeFileSync(path.join(destdir, \"moch",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "lib/cli/init.js",
+            "line": 32,
+            "col": 6,
+            "snippet": "e.html\"), ); fs.writeFileSync(path.join(destdir, \"mocha.css\"), css); fs.writeFileSync(path.join(destdir, \"mocha.js\"), js); fs.writeF",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "lib/cli/init.js",
+            "line": 33,
+            "col": 6,
+            "snippet": "a.css\"), css); fs.writeFileSync(path.join(destdir, \"mocha.js\"), js); fs.writeFileSync(path.join(destdir, \"tests.spec.js\"), \"\"); fs.wri",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "lib/cli/init.js",
+            "line": 34,
+            "col": 6,
+            "snippet": "cha.js\"), js); fs.writeFileSync(path.join(destdir, \"tests.spec.js\"), \"\"); fs.writeFileSync(path.join(destdir, \"index.html\"), tmpl); };",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "INJ-PATH-TRAVERSAL",
+            "severity": "high",
+            "category": "injection",
+            "title": "路径穿越：未校验的文件路径拼接",
+            "message": "文件操作路径来自不可信输入",
+            "file": "lib/cli/init.js",
+            "line": 35,
+            "col": 6,
+            "snippet": "pec.js\"), \"\"); fs.writeFileSync(path.join(destdir, \"index.html\"), tmpl); };",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "XSS-INNERHTML",
+            "severity": "high",
+            "category": "xss",
+            "title": "DOM XSS：innerHTML / document.write 写入不可信数据",
+            "message": "用户输入直接写入 DOM，存在 XSS 风险",
+            "file": "lib/reporters/html.js",
+            "line": 360,
+            "col": 7,
+            "snippet": "var i = 1; div.innerHTML = html.replace(/%([se])/g, function (_, type) { switch (type) { case \"s\": return String(args",
+            "confidence": 92,
+            "heuristic": false
+          }
+        ]
+      },
+      {
+        "repo": "websockets/ws",
+        "findings": 2,
+        "summary": {
+          "total": 19,
+          "counts": {
+            "critical": 0,
+            "high": 2,
+            "medium": 12,
+            "low": 5,
+            "info": 0
+          },
+          "byCategory": {
+            "supply-chain": 4,
+            "crypto": 3,
+            "secret": 12
+          },
+          "securityScore": 12,
+          "grade": "F"
+        },
+        "detail": [
+          {
+            "ruleId": "GL-generic-api-key",
+            "severity": "high",
+            "category": "secret",
+            "title": "疑似泄漏：generic-api-key",
+            "message": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+            "file": "lib/permessage-deflate.js",
+            "line": 257,
+            "col": 13,
+            "snippet": "ue[0]; if (key === 'clie…ts（已脱敏，原文 22 字符）') { if (value !== true) { const num = +value; if (!Num",
+            "confidence": 92,
+            "heuristic": false
+          },
+          {
+            "ruleId": "GL-generic-api-key",
+            "severity": "high",
+            "category": "secret",
+            "title": "疑似泄漏：generic-api-key",
+            "message": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+            "file": "lib/permessage-deflate.js",
+            "line": 271,
+            "col": 20,
+            "snippet": "} else if (key === 'serv…ts（已脱敏，原文 22 字符）') { const num = +value; if (!Number.isInteger(num) || num < 8 || num",
+            "confidence": 92,
+            "heuristic": false
+          }
+        ]
+      }
+    ],
+    "issuesOpened": 0,
+    "errors": [],
+    "thirdParty": true
+  }
+}

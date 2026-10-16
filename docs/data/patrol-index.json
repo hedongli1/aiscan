@@ -1,0 +1,245 @@
+{
+  "updatedAt": "2026-10-16T19:45:20.997Z",
+  "days": [
+    {
+      "date": "2026-08-29",
+      "scanned": 5,
+      "clean": 1,
+      "flagged": 4,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-08-30",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-08-31",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-01",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-02",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-03",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-04",
+      "scanned": 5,
+      "clean": 2,
+      "flagged": 3,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-05",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-06",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-07",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-08",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-09",
+      "scanned": 5,
+      "clean": 1,
+      "flagged": 4,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-10",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-11",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-12",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-13",
+      "scanned": 5,
+      "clean": 2,
+      "flagged": 3,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-14",
+      "scanned": 5,
+      "clean": 1,
+      "flagged": 4,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-15",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-16",
+      "scanned": 5,
+      "clean": 2,
+      "flagged": 3,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-17",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-18",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-19",
+      "scanned": 5,
+      "clean": 1,
+      "flagged": 4,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-20",
+      "scanned": 5,
+      "clean": 2,
+      "flagged": 3,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-21",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-22",
+      "scanned": 5,
+      "clean": 1,
+      "flagged": 4,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-23",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-09-24",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-10-14",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-10-15",
+      "scanned": 5,
+      "clean": 0,
+      "flagged": 5,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-10-16",
+      "scanned": 5,
+      "clean": 1,
+      "flagged": 4,
+      "issues": 0,
+      "errors": 0
+    }
+  ]
+}
