@@ -13,10 +13,11 @@
  *
  * 运行：GITHUB_TOKEN=xxx node scripts/fetch-tools.js
  */
-'use strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const fs = require('fs');
-const path = require('path');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const TOKEN = process.env.GITHUB_TOKEN || '';
 const PER_CAT = Number(process.env.PER_CAT || 12);
