@@ -1,14 +1,6 @@
 {
-  "updatedAt": "2026-11-05T22:27:29.933Z",
+  "updatedAt": "2026-11-06T21:52:09.865Z",
   "days": [
-    {
-      "date": "2026-09-18",
-      "scanned": 5,
-      "clean": 0,
-      "flagged": 5,
-      "issues": 0,
-      "errors": 0
-    },
     {
       "date": "2026-09-19",
       "scanned": 5,
@@ -235,6 +227,14 @@
     },
     {
       "date": "2026-11-05",
+      "scanned": 5,
+      "clean": 1,
+      "flagged": 4,
+      "issues": 0,
+      "errors": 0
+    },
+    {
+      "date": "2026-11-06",
       "scanned": 5,
       "clean": 1,
       "flagged": 4,
