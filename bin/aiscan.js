@@ -51,7 +51,7 @@ async function main() {
     return;
   }
 
-  const targets = args.filter((a) => !a.startsWith('--'));
+  const targets = args.filter((a, i) => !a.startsWith('--') && !(i > 0 && args[i - 1] === '--report'));
   const root = targets.length ? targets : ['.'];
 
   // ── 巡检模式（patrol）：扫全账号仓库 + 自动开 Issue ──
