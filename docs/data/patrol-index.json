@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-11-17T00:34:17.686Z",
+  "updatedAt": "2026-11-17T23:41:44.352Z",
   "days": [
     {
       "date": "2026-10-17",
@@ -236,8 +236,8 @@
     {
       "date": "2026-11-17",
       "scanned": 5,
-      "clean": 1,
-      "flagged": 4,
+      "clean": 0,
+      "flagged": 5,
       "issues": 0,
       "errors": 0
     }
